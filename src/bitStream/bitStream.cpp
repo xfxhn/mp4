@@ -23,8 +23,8 @@ uint8_t BitStream::readBit() {
     return result;
 }
 
-uint32_t BitStream::readMultiBit(uint32_t n) {
-    uint32_t result = 0;
+uint64_t BitStream::readMultiBit(uint32_t n) {
+    uint64_t result = 0;
     for (uint32_t i = 0; i < n; ++i) {
         //把前n位移到后面n位来
         //readBit()在算数表达式小于int类型，会被扩展为整型
@@ -47,4 +47,14 @@ uint32_t BitStream::getMultiBit(uint32_t n) {
     position = tempPosition;
     return ret;
 }
+
+int BitStream::getString(char str[], uint32_t n) {
+    for (int i = 0; i < n; ++i) {
+        char c = readMultiBit(8);
+        str[i] = c;
+    }
+    return 0;
+}
+
+
 

@@ -4,12 +4,16 @@
 
 #include <cstdint>
 
+class BitStream;
+
 class Box {
 private:
     uint32_t size;
-    uint32_t type;
+    const char *type;
 public:
-    Box(uint32_t boxtype, uint32_t extended_type);
+    Box(BitStream &bs, const char *boxtype, uint32_t size);
+
+    virtual  ~Box() = default;
 };
 
 #endif //MP4DECODER_BOX_H
