@@ -7,8 +7,30 @@
 #include "box.h"
 
 class MovieHeaderBox : public FullBox {
+
+private:
+    uint64_t creation_time;
+    uint64_t modification_time;
+    /*文件媒体在1秒时间内的刻度值，可以理解为1秒长度的时间单元数*/
+    uint32_t timescale;
+    /*该track的时间长度，用duration和time scale值可以计算track时长，
+     * 比如audio track的time scale = 8000, duration = 560128，时长为70.016，
+     * video track的time scale = 600, duration = 42000，时长为70*/
+    uint64_t duration;
+    float rate;
+    /*unsigned float rate1;*/
+    float volume;
+    uint32_t matrix[9]{};
+    uint32_t pre_defined[6]{};
+    uint32_t next_track_ID;
 public:
     MovieHeaderBox(BitStream &bs, const char *boxtype, uint32_t size);
+
+//    MovieHeaderBox(MovieHeaderBox &&a) noexcept;
+
+    MovieHeaderBox(const MovieHeaderBox &a);
+
+    ~MovieHeaderBox() override;
 };
 
 class MovieBox {
@@ -22,7 +44,7 @@ public:
     MovieBox(BitStream &bs, const char *boxtype, uint32_t size);
 
 
-    int parseBox(BitStream &bs,const char *type, uint32_t boxSize);
+    int parseBox(BitStream &bs, const char *type, uint32_t boxSize);
 };
 
 

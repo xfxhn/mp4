@@ -16,8 +16,21 @@ Box::Box(BitStream &bs, const char *boxtype, uint32_t size)
     }
 }
 
+/*Box::Box(const Box &a) : size(a.size), type(a.type) {
+
+}*/
+
 FullBox::FullBox(BitStream &bs, const char *boxtype, uint32_t size)
         : Box(bs, boxtype, size) {
     version = bs.readMultiBit(8);
     flags = bs.readMultiBit(24);
+}
+
+FullBox::~FullBox() {
+    int aa = 1;
+}
+
+FullBox::FullBox(const FullBox &val) : Box(val) {
+    version = val.version;
+    flags = val.flags;
 }
