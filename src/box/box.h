@@ -16,4 +16,12 @@ public:
     virtual  ~Box() = default;
 };
 
+class FullBox : public Box {
+private:
+    uint8_t version;
+    uint8_t flags;
+public:
+    FullBox(BitStream &bs, const char *boxtype, uint32_t size);
+};
+
 #endif //MP4DECODER_BOX_H

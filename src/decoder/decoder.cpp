@@ -5,6 +5,7 @@
 #include "decoder.h"
 #include "bitStream.h"
 #include "FileTypeBox.h"
+#include "movieBox.h"
 
 // 每次读取的字节数，256kb
 #define BYTES_READ_PER_TIME 1024 * 1024
@@ -41,6 +42,7 @@ int Decoder::init(const char *fileName) {
 
 int Decoder::decode() {
 
+
     while (true) {
         fillBuffer();
         if (readFileSize > 0) {
@@ -50,7 +52,6 @@ int Decoder::decode() {
             boxInfo info;
             getBoxInfo(info, bs);
 
-            std::cout << "aa" << std::endl;
             if (info.size == 0) {
                 break;
             }
@@ -75,14 +76,16 @@ int Decoder::getBoxInfo(boxInfo &info, BitStream &bs) {
         info.size = size;
         info.type = "ftyp";
 
-        FileTypeBox box(bs, "ftyp", size);
-        boxes.push_back(box);
-        int aaa = 1;
+        FileTypeBox ftyp(bs, "ftyp", size);
+        boxes.push_back(ftyp);
     } else if (strcmp(type, "moov") == 0) {
         info.size = size;
         info.type = "moov";
 
-    } else if (memcmp(bs.currentPtr, "mdat", 4) == 0) {
+        MovieBox moov(bs, "moov", size);
+
+
+    } else if (strcmp(type, "mdat") == 0) {
         info.size = size;
         info.type = "mdat";
 
