@@ -1,22 +1,29 @@
 #include <cstring>
 #include "trackBox.h"
 #include "bitStream.h"
+#include "mediaBox.h"
 
 TrackBox::TrackBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
 
+    uint32_t offset = 0;
 
-    uint32_t boxSize = bs.readMultiBit(32);;
-    char boxTypeName[5] = {0};
-    bs.getString(boxTypeName, 4);
-    parseBox(bs, boxTypeName, boxSize);
-    int a = 1;
+    while (offset < size) {
+        uint32_t boxSize = bs.readMultiBit(32);
+        offset += boxSize;
+        char boxTypeName[5] = {0};
+        bs.getString(boxTypeName, 4);
+        parseBox(bs, boxTypeName, boxSize);
+    }
+
 }
 
 int TrackBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     if (strcmp(boxType, "tkhd") == 0) {
         TrackHeaderBox tkhd(bs, boxType, boxSize);
         boxes.push_back(tkhd);
+    } else if (strcmp(boxType, "mdia") == 0) {
+        boxes.push_back(MediaBox(bs, boxType, boxSize));
     }
 
     return 0;

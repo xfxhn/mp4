@@ -6,6 +6,7 @@
 #include <vector>
 #include "box.h"
 
+/*mvhd针对整个影片，tkhd针对单个track，mdhd针对媒体，vmhd针对视频，smhd针对音频，可以认为是从 宽泛 > 具体，前者一般是从后者推导出来的。*/
 class MovieHeaderBox : public FullBox {
 
 private:

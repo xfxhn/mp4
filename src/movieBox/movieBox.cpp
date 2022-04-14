@@ -26,9 +26,7 @@ int MovieBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     } else if (strcmp(boxType, "iods") == 0) {
         boxes.push_back(IODS(bs, "iods", boxSize));
     } else if (strcmp(boxType, "trak") == 0) {
-        TrackBox trak(bs, "trak", boxSize);
-
-        boxes.push_back(trak);
+        boxes.push_back(TrackBox(bs, "trak", boxSize));
     }
 
     return 0;
