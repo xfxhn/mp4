@@ -1,9 +1,10 @@
 #include <cstring>
 #include "movieBox.h"
 #include "bitStream.h"
+#include "trackBox.h"
 
 MovieBox::MovieBox(BitStream &bs, const char *boxType, uint32_t size)
-        : Box(bs, boxType, size), boxtype(boxType), size(size) {
+        : Box(bs, boxType, size) {
 
     uint32_t offset = 0;
 
@@ -15,25 +16,6 @@ MovieBox::MovieBox(BitStream &bs, const char *boxType, uint32_t size)
 
         parseBox(bs, boxTypeName, boxSize);
     }
-    /*uint32_t boxSize = bs.readMultiBit(32);
-    char boxType[5] = {0};
-    bs.getString(boxType, 4);
-
-    parseBox(bs, boxType, boxSize);
-
-    boxSize = bs.readMultiBit(32);
-    memset(boxType, 0, sizeof(char) * 5);
-    bs.getString(boxType, 4);
-    parseBox(bs, boxType, boxSize);
-    int a = 1;*/
-    /*while (true) {
-        uint32_t boxSize = bs.readMultiBit(32);
-
-        char boxType[5] = {0};
-        bs.getString(boxType, 4);
-
-        parseBox(bs, boxType, boxSize);
-    }*/
 
 }
 
@@ -44,7 +26,9 @@ int MovieBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     } else if (strcmp(boxType, "iods") == 0) {
         boxes.push_back(IODS(bs, "iods", boxSize));
     } else if (strcmp(boxType, "trak") == 0) {
+        TrackBox trak(bs, "trak", boxSize);
 
+        boxes.push_back(trak);
     }
 
     return 0;

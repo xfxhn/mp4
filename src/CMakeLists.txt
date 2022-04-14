@@ -10,9 +10,10 @@ add_subdirectory(box)
 add_subdirectory(FileTypeBox)
 add_subdirectory(movieBox)
 add_subdirectory(trackBox)
+add_subdirectory(mediaBox)
 
 target_link_libraries(MP4Decoder
-        PRIVATE decoder bitStream box FileTypeBox movieBox trackBox
+        PRIVATE decoder bitStream box FileTypeBox movieBox trackBox mediaBox
         )
 target_include_directories(MP4Decoder
         PRIVATE ${PROJECT_SOURCE_DIR}/src/decoder

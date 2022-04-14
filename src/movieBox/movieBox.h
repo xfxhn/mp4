@@ -41,8 +41,6 @@ public:
 
 class MovieBox : public Box {
 private:
-    const char *boxtype;
-    uint32_t size;
 
     std::vector<Box> boxes;
 
