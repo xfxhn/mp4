@@ -26,14 +26,20 @@ private:
 public:
     MovieHeaderBox(BitStream &bs, const char *boxtype, uint32_t size);
 
-//    MovieHeaderBox(MovieHeaderBox &&a) noexcept;
+    MovieHeaderBox(const MovieHeaderBox &val);
 
-    MovieHeaderBox(const MovieHeaderBox &a);
-
-    ~MovieHeaderBox() override;
+    ~MovieHeaderBox() override = default;
 };
 
-class MovieBox {
+
+class IODS : public FullBox {
+private:
+
+public:
+    IODS(BitStream &bs, const char *boxtype, uint32_t size);
+};
+
+class MovieBox : public Box {
 private:
     const char *boxtype;
     uint32_t size;

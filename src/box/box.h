@@ -27,7 +27,7 @@ public:
 
     FullBox(const FullBox &a);
 
-    ~FullBox() override;
+    ~FullBox() override = default;
 };
 
 #endif //MP4DECODER_BOX_H

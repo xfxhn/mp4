@@ -1,5 +1,5 @@
 #include "decoder.h"
-#include <iostream>
+/*#include <iostream>
 
 using namespace std;
 
@@ -55,20 +55,14 @@ public:
             b = nullptr;
         }
     }
-};
+};*/
 
-void test() {
-
-}
 
 int main() {
-    B test1(5, 6);
+    /*B test1(5, 6);
     B test2(test1);
-    B test3(move(B(1, 2)));
-    A *aaa = new B(B(10, 11));
-
-    int aaa1 = 1;
-    /*Decoder decode;
-    decode.init("resouce/movie.mp4");*/
+    B test3(move(B(1, 2)));*/
+    Decoder decode;
+    decode.init("resouce/movie.mp4");
     return 0;
 }

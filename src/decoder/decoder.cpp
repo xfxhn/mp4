@@ -83,7 +83,7 @@ int Decoder::getBoxInfo(boxInfo &info, BitStream &bs) {
         info.type = "moov";
 
         MovieBox moov(bs, "moov", size);
-
+        boxes.push_back(moov);
 
     } else if (strcmp(type, "mdat") == 0) {
         info.size = size;

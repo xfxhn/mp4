@@ -26,9 +26,9 @@ FullBox::FullBox(BitStream &bs, const char *boxtype, uint32_t size)
     flags = bs.readMultiBit(24);
 }
 
-FullBox::~FullBox() {
+/*FullBox::~FullBox() {
     int aa = 1;
-}
+}*/
 
 FullBox::FullBox(const FullBox &val) : Box(val) {
     version = val.version;

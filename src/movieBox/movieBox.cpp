@@ -2,23 +2,49 @@
 #include "movieBox.h"
 #include "bitStream.h"
 
-MovieBox::MovieBox(BitStream &bs, const char *boxtype, uint32_t size)
-        : boxtype(boxtype), size(size) {
+MovieBox::MovieBox(BitStream &bs, const char *boxType, uint32_t size)
+        : Box(bs, boxType, size), boxtype(boxType), size(size) {
 
-    uint32_t boxSize = bs.readMultiBit(32);
+    uint32_t offset = 0;
 
+    while (offset < size) {
+        uint32_t boxSize = bs.readMultiBit(32);
+        offset += boxSize;
+        char boxTypeName[5] = {0};
+        bs.getString(boxTypeName, 4);
+
+        parseBox(bs, boxTypeName, boxSize);
+    }
+    /*uint32_t boxSize = bs.readMultiBit(32);
     char boxType[5] = {0};
     bs.getString(boxType, 4);
 
     parseBox(bs, boxType, boxSize);
+
+    boxSize = bs.readMultiBit(32);
+    memset(boxType, 0, sizeof(char) * 5);
+    bs.getString(boxType, 4);
+    parseBox(bs, boxType, boxSize);
+    int a = 1;*/
+    /*while (true) {
+        uint32_t boxSize = bs.readMultiBit(32);
+
+        char boxType[5] = {0};
+        bs.getString(boxType, 4);
+
+        parseBox(bs, boxType, boxSize);
+    }*/
+
 }
 
 int MovieBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "mvhd") == 0) {
-        MovieHeaderBox mvhd(bs, "mvhd", boxSize);
-        boxes.push_back(mvhd);
         boxes.push_back(MovieHeaderBox(bs, "mvhd", boxSize));
+    } else if (strcmp(boxType, "iods") == 0) {
+        boxes.push_back(IODS(bs, "iods", boxSize));
+    } else if (strcmp(boxType, "trak") == 0) {
+
     }
 
     return 0;
@@ -47,19 +73,19 @@ MovieHeaderBox::MovieHeaderBox(BitStream &bs, const char *boxtype, uint32_t size
     bs.readMultiBit(32);
 
 
-    for (uint32_t &i : matrix) {
-        i = bs.readMultiBit(32);
+    for (uint32_t &val : matrix) {
+        val = bs.readMultiBit(32);
     }
 
-    for (uint32_t &j : pre_defined) {
-        j = bs.readMultiBit(32);
+    for (uint32_t &val : pre_defined) {
+        val = bs.readMultiBit(32);
     }
     next_track_ID = bs.readMultiBit(32);
 }
 
-MovieHeaderBox::~MovieHeaderBox() {
+/*MovieHeaderBox::~MovieHeaderBox() {
     int aaaaaaa = 1;
-}
+}*/
 
 MovieHeaderBox::MovieHeaderBox(const MovieHeaderBox &val) : FullBox(val) {
     creation_time = val.next_track_ID;
@@ -76,3 +102,9 @@ MovieHeaderBox::MovieHeaderBox(const MovieHeaderBox &val) : FullBox(val) {
 /*MovieHeaderBox::MovieHeaderBox(MovieHeaderBox &&a): FullBox(a.bs,a.boxtype, size) noexcept {
 
 }*/
+IODS::IODS(BitStream &bs, const char *boxtype, uint32_t size)
+        : FullBox(bs, boxtype, size) {
+    /*24字节的固定值*/
+    /*Audio和Video ProfileLevel方面的描述*/
+    bs.readMultiBit((size - 12) * 8);
+}
