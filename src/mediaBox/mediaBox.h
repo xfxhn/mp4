@@ -23,7 +23,7 @@ public:
 
 /*声明当前track的类型，以及对应的处理器（handler）。*/
 class HandlerBox : public FullBox {
-private:
+public:
     uint32_t pre_defined;
     /* ‘vide’    Video track
      * ‘soun’   Audio track

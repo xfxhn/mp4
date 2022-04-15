@@ -1,6 +1,7 @@
 #include <cstring>
 #include "mediaBox.h"
 #include "bitStream.h"
+#include "mediaInformationBox.h"
 
 MediaBox::MediaBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
@@ -20,7 +21,13 @@ int MediaBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     if (strcmp(boxType, "mdhd") == 0) {
         boxes.push_back(MediaHeaderBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "hdlr") == 0) {
+
         boxes.push_back(HandlerBox(bs, boxType, boxSize));
+        HandlerBox &val = dynamic_cast< HandlerBox & >(boxes[1]);
+        const char *aaa = val.name;
+    } else if (strcmp(boxType, "minf") == 0) {
+
+        boxes.push_back(MediaInformationBox(bs, boxType, boxSize));
     }
 
     return 0;
@@ -58,10 +65,11 @@ HandlerBox::HandlerBox(BitStream &bs, const char *boxType, uint32_t size) : Full
     bs.readMultiBit(32);
     bs.readMultiBit(32);
 
-    const uint32_t len = size - 20;
+    const uint32_t len = size - 20 - 4 - 8;
     name = new char[len + 1]();
 
     bs.getString(name, len);
+
     int aa = 1;
 }
 
