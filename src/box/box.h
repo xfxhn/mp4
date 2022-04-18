@@ -20,6 +20,7 @@ public:
 
 class FullBox : public Box {
 protected:
+    /*version is an integer that specifies the version of this box */
     uint8_t version;
     uint32_t flags;
 public:

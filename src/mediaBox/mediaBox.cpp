@@ -21,12 +21,10 @@ int MediaBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     if (strcmp(boxType, "mdhd") == 0) {
         boxes.push_back(MediaHeaderBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "hdlr") == 0) {
-
         boxes.push_back(HandlerBox(bs, boxType, boxSize));
-        HandlerBox &val = dynamic_cast< HandlerBox & >(boxes[1]);
-        const char *aaa = val.name;
+        /*HandlerBox &val = dynamic_cast< HandlerBox & >(boxes[1]);
+        const char *aaa = val.name;*/
     } else if (strcmp(boxType, "minf") == 0) {
-
         boxes.push_back(MediaInformationBox(bs, boxType, boxSize));
     }
 
@@ -70,7 +68,6 @@ HandlerBox::HandlerBox(BitStream &bs, const char *boxType, uint32_t size) : Full
 
     bs.getString(name, len);
 
-    int aa = 1;
 }
 
 HandlerBox::~HandlerBox() {
