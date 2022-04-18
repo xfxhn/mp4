@@ -1,6 +1,7 @@
 #include <cstring>
 #include "mediaInformationBox.h"
 #include "bitStream.h"
+#include "dataInformationBox.h"
 
 MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
@@ -23,6 +24,10 @@ int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t b
         boxes.push_back(SoundMediaHeaderBox(bs, "smhd", boxSize));
     } else if (strcmp(boxType, "hmhd") == 0) {
         boxes.push_back(HintMediaHeaderBox(bs, "hmhd", boxSize));
+    } else if (strcmp(boxType, "nmhd") == 0) {
+        boxes.push_back(NullMediaHeaderBox(bs, "nmhd", boxSize));
+    } else if (strcmp(boxType, "dinf") == 0) {
+        boxes.push_back(DataInformationBox(bs, "dinf", boxSize));
     }
     return 0;
 }

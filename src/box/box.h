@@ -26,7 +26,7 @@ protected:
 public:
     FullBox(BitStream &bs, const char *boxtype, uint32_t size);
 
-    FullBox(const FullBox &a);
+    FullBox(const FullBox &val);
 
     ~FullBox() override = default;
 };

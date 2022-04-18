@@ -45,7 +45,7 @@ public:
     VideoMediaHeaderBox(BitStream &bs, const char *boxType, uint32_t size);
 };
 
-
+/*此框包含所有声明轨道中介质特征信息的对象。(mdia)*/
 class MediaInformationBox : public Box {
 public:
     std::vector<Box> boxes;

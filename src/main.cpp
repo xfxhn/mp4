@@ -1,4 +1,5 @@
 #include "decoder.h"
+
 /*#include <iostream>
 
 using namespace std;
@@ -59,6 +60,7 @@ public:
 
 
 int main() {
+
     /*B test1(5, 6);
     B test2(test1);
     B test3(move(B(1, 2)));*/
