@@ -58,13 +58,42 @@ public:
     }
 };*/
 
+#define BigLittleSwap32(A)  ((((uint32)(A) & 0xff000000) >> 24) |   \
+                            (((uint32)(A) & 0x00ff0000) >> 8)   |   \
+                            (((uint32)(A) & 0x0000ff00) << 8)   |   \
+                            (((uint32)(A) & 0x000000ff) << 24))
+
+
+
+
+
+// 模拟htonl函数，本机字节序转网络字节序
+
+/*unsigned long int t_htonl(unsigned long int h) {
+
+    // 若本机为大端，与网络字节序同，直接返回
+
+    // 若本机为小端，转换成大端再返回
+
+    return checkCPUendian() ? h : BigLittleSwap32(h);
+
+}*/
+
+uint64_t test1(uint64_t val) {
+    char *a = (char *) &val;
+    uint64_t ret = 0;
+    for (int i = 0; i < 8; ++i) {
+        uint8_t b = *(a + i);
+        ret = b | (ret << ((unsigned) 8));
+    }
+    return ret;
+}
+
+#include "test.h"
 
 int main() {
-
-    /*B test1(5, 6);
-    B test2(test1);
-    B test3(move(B(1, 2)));*/
-    Decoder decode;
-    decode.init("resouce/movie.mp4");
+    test();
+    /*Decoder decode;
+    decode.init("resouce/movie.mp4");*/
     return 0;
 }

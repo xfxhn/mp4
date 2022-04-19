@@ -5,7 +5,8 @@
 #include <vector>
 #include "box.h"
 
-
+/*当一个文件的数据条目设置了标志，表明媒体数据在同一个文件中，当该文件被分割为多个段进行传输时，
+ * 该标志的值不会改变，因为该文件在传输操作后(逻辑上)被重新组装(dref)*/
 class DataReferenceBox : public FullBox {
 private:
     std::vector<Box> boxes;

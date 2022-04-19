@@ -4,7 +4,7 @@
 #include <cstring>
 #include "decoder.h"
 #include "bitStream.h"
-#include "FileTypeBox.h"
+#include "fileTypeBox.h"
 #include "movieBox.h"
 
 // 每次读取的字节数，256kb

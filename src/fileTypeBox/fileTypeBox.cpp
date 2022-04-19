@@ -1,5 +1,5 @@
 
-#include "FileTypeBox.h"
+#include "fileTypeBox.h"
 #include "bitStream.h"
 
 FileTypeBox::FileTypeBox(BitStream &bs, const char *boxtype, uint32_t size)

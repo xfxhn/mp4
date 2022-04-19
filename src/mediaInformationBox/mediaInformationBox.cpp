@@ -2,10 +2,12 @@
 #include "mediaInformationBox.h"
 #include "bitStream.h"
 #include "dataInformationBox.h"
+#include "sampleTableBox.h"
 
 MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
-    uint32_t offset = 0;
+    /*type 4 size 4*/
+    uint32_t offset = 8;
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -28,6 +30,8 @@ int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t b
         boxes.push_back(NullMediaHeaderBox(bs, "nmhd", boxSize));
     } else if (strcmp(boxType, "dinf") == 0) {
         boxes.push_back(DataInformationBox(bs, "dinf", boxSize));
+    } else if (strcmp(boxType, "stbl") == 0) {
+
     }
     return 0;
 }
