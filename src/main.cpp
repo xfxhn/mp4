@@ -89,11 +89,9 @@ uint64_t test1(uint64_t val) {
     return ret;
 }
 
-#include "test.h"
 
 int main() {
-    test();
-    /*Decoder decode;
-    decode.init("resouce/movie.mp4");*/
+    Decoder decode;
+    decode.init("resouce/movie.mp4");
     return 0;
 }

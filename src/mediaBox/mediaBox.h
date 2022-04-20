@@ -43,6 +43,9 @@ public:
 class MediaBox : public Box {
 private:
     std::vector<Box> boxes;
+
+    char handler_type[5]{0};
+    char *handler_type1{nullptr};
 public:
     MediaBox(BitStream &bs, const char *boxType, uint32_t size);
 

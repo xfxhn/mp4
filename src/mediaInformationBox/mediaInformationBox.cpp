@@ -4,7 +4,7 @@
 #include "dataInformationBox.h"
 #include "sampleTableBox.h"
 
-MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size)
+MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : Box(bs, boxType, size) {
     /*type 4 size 4*/
     uint32_t offset = 8;
@@ -14,11 +14,11 @@ MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uin
         offset += boxSize;
         char boxTypeName[5] = {0};
         bs.getString(boxTypeName, 4);
-        parseBox(bs, boxTypeName, boxSize);
+        parseBox(bs, boxTypeName, boxSize, handler_type);
     }
 }
 
-int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
+int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize, const char *handler_type) {
 
     if (strcmp(boxType, "vmhd") == 0) {
         boxes.push_back(VideoMediaHeaderBox(bs, "vmhd", boxSize));
@@ -31,7 +31,7 @@ int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t b
     } else if (strcmp(boxType, "dinf") == 0) {
         boxes.push_back(DataInformationBox(bs, "dinf", boxSize));
     } else if (strcmp(boxType, "stbl") == 0) {
-
+        SampleTableBox stbl(bs, "stbl", boxSize, handler_type);
     }
     return 0;
 }

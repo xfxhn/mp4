@@ -50,9 +50,9 @@ class MediaInformationBox : public Box {
 public:
     std::vector<Box> boxes;
 
-    MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size);
+    MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type);
 
-    int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+    int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize, const char *handler_type);
 };
 
 #endif //MP4DECODER_MEDIAINFORMATIONBOX_H

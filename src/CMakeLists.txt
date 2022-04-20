@@ -13,7 +13,7 @@ add_subdirectory(mediaBox)
 add_subdirectory(mediaInformationBox)
 add_subdirectory(dataInformationBox)
 add_subdirectory(sampleTableBox)
-add_subdirectory(test)
+add_subdirectory(visualSampleEntry)
 
 
 target_include_directories(MP4Decoder
@@ -22,5 +22,5 @@ target_include_directories(MP4Decoder
         )
 target_link_libraries(MP4Decoder
         PRIVATE decoder bitStream box fileTypeBox movieBox trackBox mediaBox
-        mediaInformationBox dataInformationBox sampleTableBox test
+        mediaInformationBox dataInformationBox sampleTableBox visualSampleEntry
         )
