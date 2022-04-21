@@ -54,7 +54,6 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
 
             }
         }
-        int aa = 1;
         // parseBox(bs, boxTypeName, boxSize);
     }
 
