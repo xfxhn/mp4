@@ -7,7 +7,8 @@
 class BitStream;
 
 class Box {
-private:
+protected:
+    uint32_t offset;
     uint32_t size;
     const char *type;
 public:

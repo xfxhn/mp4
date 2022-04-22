@@ -5,6 +5,28 @@
 #include <vector>
 #include "box.h"
 
+/*颜色信息框*/
+class ColourInformationBox : public Box {
+private:
+    char colour_type[5]{0};
+    uint16_t colour_primaries;
+    uint16_t transfer_characteristics;
+    uint16_t matrix_coefficients;
+    uint8_t full_range_flag;
+
+    uint16_t primariesIndex;
+    uint16_t transferFunctionIndex;
+    uint16_t matrixIndex;
+public:
+    ColourInformationBox(BitStream &bs, const char *BoxType, uint32_t size);
+};
+
+class extendBox : public Box {
+public:
+    extendBox(BitStream &bs, const char *BoxType, uint32_t size);
+};
+
+
 class AVCDecoderConfigurationRecord {
 private:
 
@@ -37,6 +59,8 @@ private:
 public:
     /*防止隐式调用构造函数*/
     explicit AVCDecoderConfigurationRecord(BitStream &bs);
+
+    ~AVCDecoderConfigurationRecord();
 };
 
 /* AVCConfig*/
@@ -70,6 +94,8 @@ public:
     VisualSampleEntry(BitStream &bs, const char *codingname, uint32_t size);
 
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~VisualSampleEntry() override;
 };
 
 #endif //MP4DECODER_VISUALSAMPLEENTRY_H

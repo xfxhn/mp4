@@ -6,9 +6,11 @@ SampleEntry::SampleEntry(BitStream &bs, const char *format, uint32_t size)
         : Box(bs, format, size) {
     /*保留*/
     bs.readMultiBit(48);
+    offset += 6;
     /*当MP4文件的数据部分，可以被分割成多个片段，每一段对应一个索引，并分别通过URL地址来获取，
      * 此时，data_reference_index 指向对应的片段（比较少用到）；*/
     data_reference_index = bs.readMultiBit(16);
+    offset += 2;
 
 }
 
@@ -16,7 +18,6 @@ VisualSampleEntry::VisualSampleEntry(BitStream &bs, const char *codingname, uint
         : SampleEntry(bs, codingname, size) {
 
     /*type 4 size 4 reserved 6 data_reference_index 2*/
-    uint32_t offset = 16;
     /*预留 16个字节*/
     bs.readMultiBit(16);
     bs.readMultiBit(16);
@@ -81,11 +82,20 @@ int VisualSampleEntry::parseBox(BitStream &bs, const char *boxType, uint32_t box
         AVCConfigurationBox avcC(bs, boxType, boxSize);
         boxes.push_back(avcC);
     } else if (strcmp(boxType, "uuid") == 0) {
-
+        extendBox uuid(bs, boxType, boxSize);
+        boxes.push_back(uuid);
     } else if (strcmp(boxType, "colr") == 0) {
-
+        ColourInformationBox colr(bs, boxType, boxSize);
+        boxes.push_back(colr);
     }
     return 0;
+}
+
+VisualSampleEntry::~VisualSampleEntry() {
+    if (compressorname) {
+        delete[] compressorname;
+        compressorname = nullptr;
+    }
 }
 
 AVCConfigurationBox::AVCConfigurationBox(BitStream &bs, const char *BoxType, uint32_t size)
@@ -163,4 +173,60 @@ AVCDecoderConfigurationRecord::AVCDecoderConfigurationRecord(BitStream &bs) {
     }
 
 
+}
+
+AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {
+
+    for (int i = 0; i < numOfSequenceParameterSets; ++i) {
+        if (sequenceParameterSetNALUnit[i]) {
+            delete[] sequenceParameterSetNALUnit[i];
+            sequenceParameterSetNALUnit[i] = nullptr;
+        }
+    }
+
+    for (int j = 0; j < numOfPictureParameterSets; ++j) {
+        if (pictureParameterSetNALUnit[j]) {
+            delete[] pictureParameterSetNALUnit[j];
+            pictureParameterSetNALUnit[j] = nullptr;
+        }
+    }
+    for (int j = 0; j < numOfSequenceParameterSetExt; ++j) {
+        if (sequenceParameterSetExtNALUnit[j]) {
+            delete[] sequenceParameterSetExtNALUnit[j];
+            sequenceParameterSetExtNALUnit[j] = nullptr;
+        }
+    }
+}
+
+extendBox::extendBox(BitStream &bs, const char *BoxType, uint32_t size)
+        : Box(bs, BoxType, size) {
+    uint32_t a = bs.readMultiBit(32);
+}
+
+ColourInformationBox::ColourInformationBox(BitStream &bs, const char *BoxType, uint32_t size)
+        : Box(bs, BoxType, size) {
+/*Colour_type:表示所提供的颜色信息的类型。
+ * 对于colour_type ' nclx ':这些字段恰好是在ISO/IEC 29199-2的a .7.2中为PTM_COLOR_INFO()定义的四个字节，
+ * 但请注意，全范围标志在这里的不同位位置  */
+    bs.getString(colour_type, 4);
+
+    if (strcmp(colour_type, "nclc") == 0) {
+        /*参考https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFChap3/qtff3.html#//apple_ref/doc/uid/TP40000939-CH205-125526*/
+        primariesIndex = bs.readMultiBit(16);
+        transferFunctionIndex = bs.readMultiBit(16);
+        matrixIndex = bs.readMultiBit(16);
+    } else if (strcmp(colour_type, "nclx") == 0) {
+        colour_primaries = bs.readMultiBit(16);
+        transfer_characteristics = bs.readMultiBit(16);
+        matrix_coefficients = bs.readMultiBit(16);
+        full_range_flag = bs.readBit();
+        bs.readMultiBit(7);
+    } else if (strcmp(colour_type, "rICC") == 0) {
+        /*参考https://blog.csdn.net/lxw907304340/article/details/46356637*/
+        /*参考https://blog.csdn.net/culinxia2707/article/details/108781014?spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6.pc_relevant_paycolumn_v3&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6.pc_relevant_paycolumn_v3&utm_relevant_index=10*/
+        //ICC_profile
+    } else if (strcmp(colour_type, "prof") == 0) {
+        /*参考https://blog.csdn.net/lxw907304340/article/details/46356637*/
+        //ICC_profile
+    }
 }
