@@ -1,6 +1,6 @@
 
-#ifndef MP4DECODER_TRACKBOX_H
-#define MP4DECODER_TRACKBOX_H
+#ifndef MP4_TRACKBOX_H
+#define MP4_TRACKBOX_H
 
 #include <vector>
 #include "box.h"

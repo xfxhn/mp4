@@ -1,9 +1,18 @@
 
-#ifndef MP4DECODER_VISUALSAMPLEENTRY_H
-#define MP4DECODER_VISUALSAMPLEENTRY_H
+#ifndef MP4_VISUALSAMPLEENTRY_H
+#define MP4_VISUALSAMPLEENTRY_H
 
 #include <vector>
 #include "box.h"
+#include "sampleEntry.h"
+
+
+/*class SampleEntry1 : public Box {
+private:
+    uint16_t data_reference_index;
+public:
+    SampleEntry1(BitStream &bs, const char *format, uint32_t size);
+};*/
 
 /*颜色信息框*/
 class ColourInformationBox : public Box {
@@ -70,13 +79,6 @@ public:
     AVCConfigurationBox(BitStream &bs, const char *BoxType, uint32_t size);
 };
 
-
-class SampleEntry : public Box {
-private:
-    uint16_t data_reference_index;
-public:
-    SampleEntry(BitStream &bs, const char *format, uint32_t size);
-};
 
 class VisualSampleEntry : public SampleEntry {
 

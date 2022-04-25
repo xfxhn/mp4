@@ -79,6 +79,8 @@ public:
 
 }*/
 
+
+
 uint64_t test1(uint64_t val) {
     char *a = (char *) &val;
     uint64_t ret = 0;
@@ -89,9 +91,7 @@ uint64_t test1(uint64_t val) {
     return ret;
 }
 
-
 int main() {
-
     Decoder decode;
     decode.init("resouce/movie.mp4");
     return 0;

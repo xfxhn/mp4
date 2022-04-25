@@ -40,6 +40,7 @@ public:
 };
 
 
+/*mdia 媒体声明容器包含在一个音轨内声明有关媒体数据信息的所有对象。  */
 class MediaBox : public Box {
 private:
     std::vector<Box> boxes;

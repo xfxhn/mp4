@@ -1,9 +1,8 @@
-//
-// Created by Administrator on 2022/3/17.
-//
 
 #ifndef AACDECODER_BITSTREAM_H
 #define AACDECODER_BITSTREAM_H
+
+#include "cstdint"
 
 class BitStream {
 private:

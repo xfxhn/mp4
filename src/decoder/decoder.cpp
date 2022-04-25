@@ -12,9 +12,6 @@
 
 #define min(a, b) ( (a) < (b) ? (a) : (b) )
 
-enum boxType {
-    ftyp
-};
 struct boxInfo {
     uint32_t size;
     const char *type;
@@ -23,8 +20,6 @@ struct boxInfo {
 
 
 int Decoder::init(const char *fileName) {
-
-
     file.open(fileName, std::ios::binary);
 
     if (!file.is_open()) {

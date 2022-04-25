@@ -2,12 +2,13 @@
 #include "sampleTableBox.h"
 #include "bitStream.h"
 #include "visualSampleEntry.h"
+#include "audioSampleEntry.h"
 
 SampleTableBox::SampleTableBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : Box(bs, boxType, size), handler_type_(handler_type) {
     /*type 4 size 4*/
 //    uint32_t offset = 8;
-
+//    xiaofeng1();
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
@@ -28,21 +29,28 @@ int SampleTableBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSiz
     } else if (strcmp(boxType, "stsz") == 0) {
         SampleSizeBox stsz(bs, "stsz", boxSize);
         sample_count = stsz.sample_count;
-
+        boxes.push_back(stsz);
     } else if (strcmp(boxType, "stz2") == 0) {
         CompactSampleSizeBox stz2(bs, "stz2", boxSize);
+        boxes.push_back(stz2);
     } else if (strcmp(boxType, "stsc") == 0) {
         SampleToChunkBox stsc(bs, "stsc", boxSize);
+        boxes.push_back(stsc);
     } else if (strcmp(boxType, "stco") == 0) {
         ChunkOffsetBox stco(bs, "stco", boxSize);
+        boxes.push_back(stco);
     } else if (strcmp(boxType, "co64") == 0) {
         ChunkLargeOffsetBox co64(bs, "co64", boxSize);
+        boxes.push_back(co64);
     } else if (strcmp(boxType, "stss") == 0) {
         SyncSampleBox stss(bs, "stss", boxSize);
+        boxes.push_back(stss);
     } else if (strcmp(boxType, "ctts") == 0) {
         CompositionOffsetBox ctts(bs, "ctts", boxSize);
+        boxes.push_back(ctts);
     } else if (strcmp(boxType, "sdtp") == 0) {
-
+        SampleDependencyTypeBox sdtp(bs, "ctts", boxSize, sample_count);
+        boxes.push_back(sdtp);
     }
     return 0;
 }
@@ -66,7 +74,8 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
          * 比如说有两组sps和pps，这个chunk里的sample用第一个sps，pps，那个chunk里的sample用第二个sps，pps*/
         for (i = 1; i <= entry_count; ++i) {
             if (strcmp(handler_type, "soun") == 0) {// for audio tracks
-                int a = 1;
+                AudioSampleEntry soun(bs, boxTypeName, boxSize);
+                boxes.push_back(soun);
             } else if (strcmp(handler_type, "vide") == 0) {// for video tracks
                 VisualSampleEntry vide(bs, boxTypeName, boxSize);
                 boxes.push_back(vide);
@@ -263,8 +272,25 @@ SampleDependencyTypeBox::SampleDependencyTypeBox(BitStream &bs, const char *boxT
      *  is_leading=3 这个sample是一个领先的示例，在引用的I-picture之前没有依赖关系(因此是可解码的);
      * */
     is_leading = new uint8_t[sample_count];
+
+    /*
+      0:  该样本的依赖性未知;
+      1:  这个样本确实依赖于其他人(不是一个I帧);
+      2:  这个样本不依赖于其他样本(I帧);
+      3:  reserved
+      */
     sample_depends_on = new uint8_t[sample_count];
+    /*
+     * 0:  其他样本对该样本的依赖性未知;
+     * 1:  其他样品可能取决于这个(不是一次性的);
+     * 2:  没有其他样品依赖于这个(一次性);
+     * 3:  reserved*/
     sample_is_depended_on = new uint8_t[sample_count];
+    /*
+     * 0:  不知道该样本中是否存在冗余编码;
+     * 1:  本sample中存在冗余编码;
+     * 2:  在这个sample中没有冗余编码;
+     * 3:  reserved */
     sample_has_redundancy = new uint8_t[sample_count];
 
     for (uint32_t i = 0; i < sample_count; ++i) {

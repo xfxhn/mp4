@@ -3,6 +3,7 @@
 
 
 add_executable(MP4Decoder main.cpp)
+
 add_subdirectory(bitStream)
 add_subdirectory(decoder)
 add_subdirectory(box)
@@ -14,13 +15,14 @@ add_subdirectory(mediaInformationBox)
 add_subdirectory(dataInformationBox)
 add_subdirectory(sampleTableBox)
 add_subdirectory(visualSampleEntry)
-
+add_subdirectory(trackReferenceBox)
+add_subdirectory(audioSampleEntry)
+add_subdirectory(xiaofeng)
 
 target_include_directories(MP4Decoder
         PRIVATE ${PROJECT_SOURCE_DIR}/src/decoder
-        PRIVATE ${PROJECT_SOURCE_DIR}/src/test
         )
 target_link_libraries(MP4Decoder
-        PRIVATE decoder bitStream box fileTypeBox movieBox trackBox mediaBox
-        mediaInformationBox dataInformationBox sampleTableBox visualSampleEntry
+        PRIVATE sampleEntry decoder bitStream box fileTypeBox movieBox trackBox mediaBox
+        mediaInformationBox dataInformationBox sampleTableBox visualSampleEntry trackReferenceBox audioSampleEntry
         )

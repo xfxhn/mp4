@@ -2,11 +2,10 @@
 #include "trackBox.h"
 #include "bitStream.h"
 #include "mediaBox.h"
+#include "trackReferenceBox.h"
 
 TrackBox::TrackBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
-
-    uint32_t offset = 0;
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -24,6 +23,9 @@ int TrackBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
         boxes.push_back(tkhd);
     } else if (strcmp(boxType, "mdia") == 0) {
         boxes.push_back(MediaBox(bs, boxType, boxSize));
+    } else if (strcmp(boxType, "tref") == 0) {
+        TrackReferenceBox tref(bs, boxType, boxSize);
+        boxes.push_back(tref);
     }
 
     return 0;

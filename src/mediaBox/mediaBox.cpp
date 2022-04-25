@@ -5,7 +5,7 @@
 
 MediaBox::MediaBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
-    uint32_t offset = 0;
+
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
