@@ -7,8 +7,6 @@
 SampleTableBox::SampleTableBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : Box(bs, boxType, size), handler_type_(handler_type) {
     /*type 4 size 4*/
-//    uint32_t offset = 8;
-//    xiaofeng1();
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
