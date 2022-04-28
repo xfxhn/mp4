@@ -8,4 +8,5 @@ target_include_directories(decoder
         PRIVATE ${PROJECT_SOURCE_DIR}/src/fileTypeBox
         PRIVATE ${PROJECT_SOURCE_DIR}/src/movieBox
         PRIVATE ${PROJECT_SOURCE_DIR}/src/sampleEntry
+        PRIVATE ${PROJECT_SOURCE_DIR}/src/mediaDataBox
         )

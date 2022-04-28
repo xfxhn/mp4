@@ -6,8 +6,9 @@
 #include "bitStream.h"
 #include "fileTypeBox.h"
 #include "movieBox.h"
+#include "mediaDataBox.h"
 
-// 每次读取的字节数，256kb
+// 每次读取的字节数，1024kb
 #define BYTES_READ_PER_TIME 1024 * 1024
 
 #define min(a, b) ( (a) < (b) ? (a) : (b) )
@@ -26,6 +27,17 @@ int Decoder::init(const char *fileName) {
         std::cout << "读取文件失败" << std::endl;
         return -1;
     }
+
+    file.seekg(8900, std::ios::beg);
+
+    uint8_t *aaa = new uint8_t[10000]();
+
+    file.read(reinterpret_cast<char *>(aaa), 10000);
+    BitStream bs(aaa, 10000);
+
+    uint32_t naluLength = bs.readMultiBit(32);
+    int www = 1;
+    return 1;
     buffer = new uint8_t[BYTES_READ_PER_TIME]();
 
     file.read(reinterpret_cast<char *>(buffer), BYTES_READ_PER_TIME);
@@ -84,7 +96,8 @@ int Decoder::getBoxInfo(boxInfo &info, BitStream &bs) {
         info.size = size;
         info.type = "mdat";
 
-        bs.readMultiBit(32);
+        MediaDataBox mdat(bs, "mdat", size);
+        boxes.push_back(mdat);
     }
 
     return 0;

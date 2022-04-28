@@ -20,6 +20,7 @@ add_subdirectory(audioSampleEntry)
 add_subdirectory(xiaofeng)
 add_subdirectory(userDataBox)
 add_subdirectory(metaBox)
+add_subdirectory(mediaDataBox)
 add_subdirectory(unknownBox)
 
 target_include_directories(MP4Decoder
@@ -28,5 +29,5 @@ target_include_directories(MP4Decoder
 target_link_libraries(MP4Decoder
         PRIVATE sampleEntry decoder bitStream box fileTypeBox movieBox trackBox mediaBox
         mediaInformationBox dataInformationBox sampleTableBox visualSampleEntry trackReferenceBox audioSampleEntry
-        userDataBox unknownBox metaBox
+        userDataBox unknownBox metaBox mediaDataBox
         )
