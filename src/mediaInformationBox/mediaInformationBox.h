@@ -5,6 +5,7 @@
 #include <vector>
 #include "box.h"
 
+
 /*视频流和音频流(例如，定时元数据流)可以使用一个空的媒体头框，如这里定义的。*/
 class NullMediaHeaderBox : public FullBox {
 public:

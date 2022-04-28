@@ -8,7 +8,6 @@
 class esdsConfigurationBox : public FullBox {
 private:
     /*ES_DescrTag*/
-    /*uint8_t ES_DescrTag;*/
     uint16_t ES_ID{};
     bool streamDependenceFlag{};
     bool URL_Flag{};
@@ -17,7 +16,6 @@ private:
 
 
     /*DecoderConfigDescrTag*/
-    /*  uint8_t DecoderConfigDescrTag;*/
     uint8_t objectTypeIndication{};
     uint8_t streamType{};
     uint8_t upStream{};
@@ -25,8 +23,7 @@ private:
     uint32_t maxBitrate{};
     uint32_t avgBitrate{};
 
-
-    /*uint8_t DecSpecificInfoTag;*/
+    /*DecSpecificInfoTag*/
     uint8_t audioObjectType{};
     uint8_t samplingFrequencyIndex{};
     uint32_t samplingFrequency{};

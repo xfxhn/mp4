@@ -1,6 +1,6 @@
 
 
-add_library(mediaBox OBJECT mediaBox.cpp)
+add_library(mediaBox OBJECT mediaBox.cpp handlerBox.cpp)
 
 
 target_include_directories(mediaBox

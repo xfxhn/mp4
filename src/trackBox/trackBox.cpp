@@ -3,6 +3,7 @@
 #include "bitStream.h"
 #include "mediaBox.h"
 #include "trackReferenceBox.h"
+#include "userDataBox.h"
 
 TrackBox::TrackBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
@@ -26,6 +27,9 @@ int TrackBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     } else if (strcmp(boxType, "tref") == 0) {
         TrackReferenceBox tref(bs, boxType, boxSize);
         boxes.push_back(tref);
+    } else if (strcmp(boxType, "udta") == 0) {
+        UserDataBox udta(bs, boxType, boxSize);
+        boxes.push_back(udta);
     }
 
     return 0;

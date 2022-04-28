@@ -3,6 +3,7 @@
 #include "bitStream.h"
 #include "visualSampleEntry.h"
 #include "audioSampleEntry.h"
+#include "unknownBox.h"
 
 SampleTableBox::SampleTableBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : Box(bs, boxType, size), handler_type_(handler_type) {
@@ -57,11 +58,10 @@ int SampleTableBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSiz
 SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : FullBox(bs, boxType, size) {
 
-
     int i;
     entry_count = bs.readMultiBit(32);
     offset += 4;
-    /*type 4 size 4 version 1 flags 3 entry_count 4*/
+
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
@@ -81,6 +81,8 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
 
             } else if (strcmp(handler_type, "meta") == 0) {// Metadata track
 
+            } else {
+                boxes.push_back(UnknownBox(bs, boxTypeName, boxSize));
             }
         }
         // parseBox(bs, boxTypeName, boxSize);

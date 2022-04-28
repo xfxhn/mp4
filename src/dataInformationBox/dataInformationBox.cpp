@@ -5,15 +5,12 @@
 
 DataInformationBox::DataInformationBox(BitStream &bs, const char *boxType, uint32_t size)
         : Box(bs, boxType, size) {
-    /*type 4 size 4*/
-    uint32_t offset = 8;
-    const char *aaa = nullptr;
+
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
         char boxTypeName[5] = {0};
         bs.getString(boxTypeName, 4);
-        aaa = boxTypeName;
         parseBox(bs, boxTypeName, boxSize);
     }
 }
@@ -36,7 +33,7 @@ DataEntryUrlBox::DataEntryUrlBox(BitStream &bs, const char *boxType, uint32_t si
     /*当“url”或“urn”的box flag为1时，字符串均为空。*/
     // flag 为 1，表示媒体数据包含在了当前movie文件里
     if (flags != 1) {
-        const uint32_t len = size - 4 - 8;
+        const uint32_t len = size - offset;
         location = new char[len + 1]();
         bs.getString(location, len);
     }

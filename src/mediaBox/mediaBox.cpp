@@ -1,6 +1,7 @@
 #include <cstring>
 #include "mediaBox.h"
 #include "bitStream.h"
+#include "handlerBox.h"
 #include "mediaInformationBox.h"
 
 MediaBox::MediaBox(BitStream &bs, const char *boxType, uint32_t size)
@@ -57,12 +58,12 @@ MediaHeaderBox::MediaHeaderBox(BitStream &bs, const char *boxType, uint32_t size
     pre_defined = bs.readMultiBit(16);
 }
 
-HandlerBox::HandlerBox(BitStream &bs, const char *boxType, uint32_t size) : FullBox(bs, boxType, size) {
-    /*预留*/
+/*HandlerBox::HandlerBox(BitStream &bs, const char *boxType, uint32_t size) : FullBox(bs, boxType, size) {
+    *//*预留*//*
     pre_defined = bs.readMultiBit(32);
-    /* 4个字节，表明是 video track、audio track 还是 hint track还是其他track*/
+    *//* 4个字节，表明是 video track、audio track 还是 hint track还是其他track*//*
     bs.getString(handler_type, 4);
-    /*保留*/
+    *//*保留*//*
     bs.readMultiBit(32);
     bs.readMultiBit(32);
     bs.readMultiBit(32);
@@ -79,4 +80,4 @@ HandlerBox::~HandlerBox() {
         delete[] name;
         name = nullptr;
     }
-}
+}*/

@@ -10,7 +10,8 @@ class Box {
 protected:
     uint32_t offset;
     uint32_t size;
-    const char *type;
+    char type[5]{0};
+    char usertype[17]{0};
 public:
     Box(BitStream &bs, const char *boxtype, uint32_t size);
 

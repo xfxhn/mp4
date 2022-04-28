@@ -3,11 +3,10 @@
 #include "bitStream.h"
 #include "dataInformationBox.h"
 #include "sampleTableBox.h"
+#include "unknownBox.h"
 
 MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
         : Box(bs, boxType, size) {
-    /*type 4 size 4*/
-//    uint32_t offset = 8;
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -32,6 +31,10 @@ int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t b
         boxes.push_back(DataInformationBox(bs, "dinf", boxSize));
     } else if (strcmp(boxType, "stbl") == 0) {
         SampleTableBox stbl(bs, "stbl", boxSize, handler_type);
+        boxes.push_back(stbl);
+    } else {
+        UnknownBox unkn(bs, boxType, boxSize);
+        boxes.push_back(unkn);
     }
     return 0;
 }

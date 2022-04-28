@@ -3,8 +3,8 @@
 #include "bitStream.h"
 
 Box::Box(BitStream &bs, const char *boxtype, uint32_t size)
-        : type(boxtype), size(size), offset(8) {
-
+        : size(size), offset(8) {
+    strcpy(type, boxtype);
     if (size == 1) {
         this->size = bs.readMultiBit(64);
         offset += 8;
@@ -13,10 +13,7 @@ Box::Box(BitStream &bs, const char *boxtype, uint32_t size)
     }
     if (strcmp(boxtype, "uuid") == 0) {
         //unsigned int(8)[16] usertype = extended_type;
-
-        char *extended_type = new char[16 + 1]();
-        bs.getString(extended_type, 16);
-        this->type = "uuid";
+        bs.getString(usertype, 16);
         offset += 16;
     }
 }
