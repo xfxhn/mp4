@@ -6,7 +6,7 @@
 #include "unknownBox.h"
 
 SampleTableBox::SampleTableBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
-        : Box(bs, boxType, size), handler_type_(handler_type) {
+        : Box(bs, boxType, size, true), handler_type_(handler_type) {
     /*type 4 size 4*/
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -20,43 +20,48 @@ SampleTableBox::SampleTableBox(BitStream &bs, const char *boxType, uint32_t size
 int SampleTableBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "stsd") == 0) {
-        SampleDescriptionBox stsd(bs, "stsd", boxSize, handler_type_);
-        boxes.push_back(stsd);
+        boxes.push_back(new SampleDescriptionBox(bs, "stsd", boxSize, handler_type_));
     } else if (strcmp(boxType, "stts") == 0) {
-        TimeToSampleBox stts(bs, "stts", boxSize);
-        boxes.push_back(stts);
+        boxes.push_back(new TimeToSampleBox(bs, "stts", boxSize));
     } else if (strcmp(boxType, "stsz") == 0) {
-        SampleSizeBox stsz(bs, "stsz", boxSize);
-        sample_count = stsz.sample_count;
+        SampleSizeBox *stsz = new SampleSizeBox(bs, "stsz", boxSize);
+        sample_count = stsz->sample_count;
         boxes.push_back(stsz);
     } else if (strcmp(boxType, "stz2") == 0) {
-        CompactSampleSizeBox stz2(bs, "stz2", boxSize);
-        boxes.push_back(stz2);
+        boxes.push_back(new CompactSampleSizeBox(bs, "stz2", boxSize));
     } else if (strcmp(boxType, "stsc") == 0) {
-        SampleToChunkBox stsc(bs, "stsc", boxSize);
-        boxes.push_back(stsc);
+        boxes.push_back(new SampleToChunkBox(bs, "stsc", boxSize));
     } else if (strcmp(boxType, "stco") == 0) {
-        ChunkOffsetBox stco(bs, "stco", boxSize);
-        boxes.push_back(stco);
+        boxes.push_back(new ChunkOffsetBox(bs, "stco", boxSize));
     } else if (strcmp(boxType, "co64") == 0) {
-        ChunkLargeOffsetBox co64(bs, "co64", boxSize);
-        boxes.push_back(co64);
+        boxes.push_back(new ChunkLargeOffsetBox(bs, "co64", boxSize));
     } else if (strcmp(boxType, "stss") == 0) {
-        SyncSampleBox stss(bs, "stss", boxSize);
-        boxes.push_back(stss);
+        boxes.push_back(new SyncSampleBox(bs, "stss", boxSize));
     } else if (strcmp(boxType, "ctts") == 0) {
         CompositionOffsetBox ctts(bs, "ctts", boxSize);
-        boxes.push_back(ctts);
+        boxes.push_back(new CompositionOffsetBox(bs, "ctts", boxSize));
     } else if (strcmp(boxType, "sdtp") == 0) {
-        SampleDependencyTypeBox sdtp(bs, "ctts", boxSize, sample_count);
-        boxes.push_back(sdtp);
+        boxes.push_back(new SampleDependencyTypeBox(bs, "ctts", boxSize, sample_count));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
     return 0;
 }
 
+std::vector<Box *> SampleTableBox::getBoxes() const {
+    return boxes;
+}
+
+SampleTableBox::~SampleTableBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
+}
+
 /*stsd*/
 SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
-        : FullBox(bs, boxType, size) {
+        : FullBox(bs, boxType, size, true) {
 
     int i;
     entry_count = bs.readMultiBit(32);
@@ -72,23 +77,32 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
          * 比如说有两组sps和pps，这个chunk里的sample用第一个sps，pps，那个chunk里的sample用第二个sps，pps*/
         for (i = 1; i <= entry_count; ++i) {
             if (strcmp(handler_type, "soun") == 0) {// for audio tracks
-                AudioSampleEntry soun(bs, boxTypeName, boxSize);
-                boxes.push_back(soun);
+                boxes.push_back(new AudioSampleEntry(bs, boxTypeName, boxSize));
             } else if (strcmp(handler_type, "vide") == 0) {// for video tracks
-                VisualSampleEntry vide(bs, boxTypeName, boxSize);
-                boxes.push_back(vide);
+                boxes.push_back(new VisualSampleEntry(bs, boxTypeName, boxSize));
             } else if (strcmp(handler_type, "hint") == 0) {// Hint track
 
             } else if (strcmp(handler_type, "meta") == 0) {// Metadata track
 
             } else {
-                boxes.push_back(UnknownBox(bs, boxTypeName, boxSize));
+                boxes.push_back(new UnknownBox(bs, boxTypeName, boxSize));
             }
         }
         // parseBox(bs, boxTypeName, boxSize);
     }
 
 
+}
+
+std::vector<Box *> SampleDescriptionBox::getBoxes() const {
+    return boxes;
+}
+
+SampleDescriptionBox::~SampleDescriptionBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 

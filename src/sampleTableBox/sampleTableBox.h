@@ -132,22 +132,30 @@ public:
 
 class SampleDescriptionBox : public FullBox {
 private:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
     uint32_t entry_count;
 public:
     SampleDescriptionBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type);
+
+    std::vector<Box *> getBoxes() const override;
+
+    ~SampleDescriptionBox() override;
 };
 
 class SampleTableBox : public Box {
 private:
     uint32_t sample_count{0};
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 
     const char *handler_type_;
 public:
     SampleTableBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~SampleTableBox() override;
 };
 
 #endif //MP4DECODER_SAMPLETABLEBOX_H

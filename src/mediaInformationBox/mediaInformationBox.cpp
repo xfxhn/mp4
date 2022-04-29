@@ -6,7 +6,7 @@
 #include "unknownBox.h"
 
 MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type)
-        : Box(bs, boxType, size) {
+        : Box(bs, boxType, size, true) {
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -20,23 +20,32 @@ MediaInformationBox::MediaInformationBox(BitStream &bs, const char *boxType, uin
 int MediaInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize, const char *handler_type) {
 
     if (strcmp(boxType, "vmhd") == 0) {
-        boxes.push_back(VideoMediaHeaderBox(bs, "vmhd", boxSize));
+        boxes.push_back(new VideoMediaHeaderBox(bs, "vmhd", boxSize));
     } else if (strcmp(boxType, "smhd") == 0) {
-        boxes.push_back(SoundMediaHeaderBox(bs, "smhd", boxSize));
+        boxes.push_back(new SoundMediaHeaderBox(bs, "smhd", boxSize));
     } else if (strcmp(boxType, "hmhd") == 0) {
-        boxes.push_back(HintMediaHeaderBox(bs, "hmhd", boxSize));
+        boxes.push_back(new HintMediaHeaderBox(bs, "hmhd", boxSize));
     } else if (strcmp(boxType, "nmhd") == 0) {
-        boxes.push_back(NullMediaHeaderBox(bs, "nmhd", boxSize));
+        boxes.push_back(new NullMediaHeaderBox(bs, "nmhd", boxSize));
     } else if (strcmp(boxType, "dinf") == 0) {
-        boxes.push_back(DataInformationBox(bs, "dinf", boxSize));
+        boxes.push_back(new DataInformationBox(bs, "dinf", boxSize));
     } else if (strcmp(boxType, "stbl") == 0) {
-        SampleTableBox stbl(bs, "stbl", boxSize, handler_type);
-        boxes.push_back(stbl);
+        boxes.push_back(new SampleTableBox(bs, "stbl", boxSize, handler_type));
     } else {
-        UnknownBox unkn(bs, boxType, boxSize);
-        boxes.push_back(unkn);
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
     return 0;
+}
+
+std::vector<Box *> MediaInformationBox::getBoxes() const {
+    return boxes;
+}
+
+MediaInformationBox::~MediaInformationBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 VideoMediaHeaderBox::VideoMediaHeaderBox(BitStream &bs, const char *boxType, uint32_t size)

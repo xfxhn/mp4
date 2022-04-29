@@ -2,8 +2,8 @@
 #include "box.h"
 #include "bitStream.h"
 
-Box::Box(BitStream &bs, const char *boxtype, uint32_t size)
-        : size(size), offset(8) {
+Box::Box(BitStream &bs, const char *boxtype, uint32_t size, bool flag)
+        : size(size), offset(8), containerBoxFlag(flag) {
     strcpy(type, boxtype);
     if (size == 1) {
         this->size = bs.readMultiBit(64);
@@ -18,12 +18,17 @@ Box::Box(BitStream &bs, const char *boxtype, uint32_t size)
     }
 }
 
+std::vector<Box *> Box::getBoxes() const {
+    return std::vector<Box *>();
+}
+
+
 /*Box::Box(const Box &a) : size(a.size), type(a.type) {
 
 }*/
 
-FullBox::FullBox(BitStream &bs, const char *boxtype, uint32_t size)
-        : Box(bs, boxtype, size) {
+FullBox::FullBox(BitStream &bs, const char *boxtype, uint32_t size, bool flag)
+        : Box(bs, boxtype, size, flag) {
     version = bs.readMultiBit(8);
     flags = bs.readMultiBit(24);
     offset += 4;

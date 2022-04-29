@@ -14,7 +14,7 @@ class BitStream;
 class Decoder {
 private:
 
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 
 
     uint8_t *buffer{nullptr};
@@ -28,6 +28,8 @@ private:
 public:
     int init(const char *fileName);
 
+    ~Decoder();
+
 private:
     int decode();
 
@@ -37,6 +39,8 @@ private:
     int advanceBuffer(uint32_t length);
 
     int fillBuffer();
+
+    int test(std::vector<Box *> &list);
 };
 
 #endif //MP4DECODER_DECODER_H

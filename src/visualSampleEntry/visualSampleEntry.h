@@ -30,10 +30,10 @@ public:
     ColourInformationBox(BitStream &bs, const char *BoxType, uint32_t size);
 };
 
-class extendBox : public Box {
+/*class extendBox : public Box {
 public:
     extendBox(BitStream &bs, const char *BoxType, uint32_t size);
-};
+};*/
 
 
 class AVCDecoderConfigurationRecord {
@@ -91,9 +91,11 @@ private:
     char *compressorname{nullptr};
     uint16_t depth{24};
 
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 public:
     VisualSampleEntry(BitStream &bs, const char *codingname, uint32_t size);
+
+    std::vector<Box *> getBoxes() const override;
 
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
 

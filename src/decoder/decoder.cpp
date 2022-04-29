@@ -28,7 +28,7 @@ int Decoder::init(const char *fileName) {
         return -1;
     }
 
-    file.seekg(8900, std::ios::beg);
+    /*file.seekg(8900, std::ios::beg);
 
     uint8_t *aaa = new uint8_t[10000]();
 
@@ -37,7 +37,7 @@ int Decoder::init(const char *fileName) {
 
     uint32_t naluLength = bs.readMultiBit(32);
     int www = 1;
-    return 1;
+    return 1;*/
     buffer = new uint8_t[BYTES_READ_PER_TIME]();
 
     file.read(reinterpret_cast<char *>(buffer), BYTES_READ_PER_TIME);
@@ -69,6 +69,9 @@ int Decoder::decode() {
         }
 
     }
+
+//    MovieBox &box = dynamic_cast< MovieBox & >(boxes[1]);
+    test(boxes);
     return 0;
 }
 
@@ -83,21 +86,21 @@ int Decoder::getBoxInfo(boxInfo &info, BitStream &bs) {
         info.size = size;
         info.type = "ftyp";
 
-        FileTypeBox ftyp(bs, "ftyp", size);
-        boxes.push_back(ftyp);
+//        FileTypeBox ftyp(bs, "ftyp", size);
+        boxes.push_back(new FileTypeBox(bs, "ftyp", size));
     } else if (strcmp(type, "moov") == 0) {
         info.size = size;
         info.type = "moov";
 
-        MovieBox moov(bs, "moov", size);
-        boxes.push_back(moov);
+//        MovieBox moov(bs, "moov", size);
+        boxes.push_back(new MovieBox(bs, "moov", size));
 
     } else if (strcmp(type, "mdat") == 0) {
         info.size = size;
         info.type = "mdat";
 
-        MediaDataBox mdat(bs, "mdat", size);
-        boxes.push_back(mdat);
+//        MediaDataBox mdat(bs, "mdat", size);
+        boxes.push_back(new MediaDataBox(bs, "mdat", size));
     }
 
     return 0;
@@ -127,7 +130,7 @@ int Decoder::fillBuffer() {
             file.read(reinterpret_cast<char *>(buffer + readFileSize), fillByteSize);
             uint32_t size = file.gcount();
 
-            /*如果读不满 fillByteSize 大小代表读到尾部了size是实际读取了多大*/
+            /*如果读不满 fillByteSize 大小代表读到尾部了，size是实际读取了多大*/
             if (size != fillByteSize) {
                 isEof = false;
             }
@@ -136,4 +139,30 @@ int Decoder::fillBuffer() {
         fillByteSize = 0;
     }
     return 0;
+}
+
+int Decoder::test(std::vector<Box *> &list) {
+
+    for (std::vector<Box>::size_type i = 0; i < list.size(); ++i) {
+        const char *type = list[i]->type;
+        std::cout << type << std::endl;
+        if (list[i]->containerBoxFlag) {
+            std::vector<Box *> boxList = list[i]->getBoxes();
+            test(boxList);
+
+            /*if (strcmp(type, "moov") == 0) {
+                MovieBox *box = dynamic_cast< MovieBox * >(list[i]);
+                test(box->boxes);
+            }*/
+        }
+    }
+
+    return 0;
+}
+
+Decoder::~Decoder() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }

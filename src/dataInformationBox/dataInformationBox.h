@@ -9,10 +9,12 @@
  * 该标志的值不会改变，因为该文件在传输操作后(逻辑上)被重新组装(dref)*/
 class DataReferenceBox : public FullBox {
 private:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
     uint32_t entry_count;
 public:
     DataReferenceBox(BitStream &bs, const char *boxType, uint32_t size);
+
+    std::vector<Box *> getBoxes() const override;
 
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
 };
@@ -43,11 +45,15 @@ public:
 /*数据信息框包含声明媒体信息在音轨中的位置的对象。(dinf)*/
 class DataInformationBox : public Box {
 public:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 
     DataInformationBox(BitStream &bs, const char *boxType, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~DataInformationBox() override;
 };
 
 #endif //MP4DECODER_DATAINFORMATIONBOX_H

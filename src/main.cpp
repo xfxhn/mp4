@@ -80,6 +80,10 @@ public:
 }*/
 
 
+#include <vector>
+#include <iostream>
+
+using namespace std;
 
 uint64_t test1(uint64_t val) {
     char *a = (char *) &val;
@@ -91,8 +95,52 @@ uint64_t test1(uint64_t val) {
     return ret;
 }
 
+class A {
+public:
+    int a = 12;
+
+    A() {
+
+    }
+
+    /*A(const A &a) {
+        cout << "111" << endl;
+    }
+
+    A(A &&a) {
+        cout << "aaaaaaaaaa" << endl;
+    }*/
+
+    virtual ~A() = default;
+};
+
+class B : public A {
+public:
+    B() {
+
+    }
+
+    /*B(const B &b) {
+        cout << "bbbb" << endl;
+    }
+
+    B(B &&b) {
+        cout << "aaaaaaaaaaaaaa" << endl;
+    }*/
+
+    int b = 24;
+};
+
 
 int main() {
+    /*B b;
+    A &s = b;
+    std::vector<A> arr;
+
+    arr.push_back(b);
+
+    B &c = static_cast<B &>(arr[0]);
+    int sss = c.b;*/
 
     Decoder decode;
     decode.init("resouce/movie.mp4");

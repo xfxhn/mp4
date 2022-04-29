@@ -4,9 +4,10 @@
 #include "mediaBox.h"
 #include "trackReferenceBox.h"
 #include "userDataBox.h"
+#include "unknownBox.h"
 
 TrackBox::TrackBox(BitStream &bs, const char *boxType, uint32_t size)
-        : Box(bs, boxType, size) {
+        : Box(bs, boxType, size, true) {
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -20,19 +21,29 @@ TrackBox::TrackBox(BitStream &bs, const char *boxType, uint32_t size)
 
 int TrackBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
     if (strcmp(boxType, "tkhd") == 0) {
-        TrackHeaderBox tkhd(bs, boxType, boxSize);
-        boxes.push_back(tkhd);
+        boxes.push_back(new TrackHeaderBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "mdia") == 0) {
-        boxes.push_back(MediaBox(bs, boxType, boxSize));
+        boxes.push_back(new MediaBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "tref") == 0) {
-        TrackReferenceBox tref(bs, boxType, boxSize);
-        boxes.push_back(tref);
+        boxes.push_back(new TrackReferenceBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "udta") == 0) {
-        UserDataBox udta(bs, boxType, boxSize);
-        boxes.push_back(udta);
+        boxes.push_back(new UserDataBox(bs, boxType, boxSize));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
 
     return 0;
+}
+
+std::vector<Box *> TrackBox::getBoxes() const {
+    return boxes;
+}
+
+TrackBox::~TrackBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 

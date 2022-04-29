@@ -61,14 +61,18 @@ public:
 
 class AudioSampleEntry : public SampleEntry {
 private:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
     uint16_t channelcount{2};
     uint16_t samplesize{16};
     uint32_t samplerate;
 public:
     AudioSampleEntry(BitStream &bs, const char *codingname, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~AudioSampleEntry() override;
 
 };
 

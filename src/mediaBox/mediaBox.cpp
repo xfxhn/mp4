@@ -3,9 +3,10 @@
 #include "bitStream.h"
 #include "handlerBox.h"
 #include "mediaInformationBox.h"
+#include "unknownBox.h"
 
 MediaBox::MediaBox(BitStream &bs, const char *boxType, uint32_t size)
-        : Box(bs, boxType, size) {
+        : Box(bs, boxType, size, true) {
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -20,20 +21,30 @@ MediaBox::MediaBox(BitStream &bs, const char *boxType, uint32_t size)
 int MediaBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "mdhd") == 0) {
-        boxes.push_back(MediaHeaderBox(bs, boxType, boxSize));
+        boxes.push_back(new MediaHeaderBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "hdlr") == 0) {
-        HandlerBox hdlr(bs, boxType, boxSize);
-        memcpy(handler_type, hdlr.handler_type, 5);
-        handler_type1 = hdlr.handler_type;
+        HandlerBox *hdlr = new HandlerBox(bs, boxType, boxSize);
+        strcpy(handler_type, hdlr->handler_type);
         boxes.push_back(hdlr);
-        /*HandlerBox &val = dynamic_cast< HandlerBox & >(boxes[1]);
-        const char *aaa = val.name;*/
+        /*HandlerBox &val = dynamic_cast< HandlerBox & >(boxes[1]);*/
     } else if (strcmp(boxType, "minf") == 0) {
-
-        boxes.push_back(MediaInformationBox(bs, boxType, boxSize, handler_type));
+        boxes.push_back(new MediaInformationBox(bs, boxType, boxSize, handler_type));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
 
     return 0;
+}
+
+std::vector<Box *> MediaBox::getBoxes() const {
+    return boxes;
+}
+
+MediaBox::~MediaBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 MediaHeaderBox::MediaHeaderBox(BitStream &bs, const char *boxType, uint32_t size)
@@ -58,26 +69,3 @@ MediaHeaderBox::MediaHeaderBox(BitStream &bs, const char *boxType, uint32_t size
     pre_defined = bs.readMultiBit(16);
 }
 
-/*HandlerBox::HandlerBox(BitStream &bs, const char *boxType, uint32_t size) : FullBox(bs, boxType, size) {
-    *//*预留*//*
-    pre_defined = bs.readMultiBit(32);
-    *//* 4个字节，表明是 video track、audio track 还是 hint track还是其他track*//*
-    bs.getString(handler_type, 4);
-    *//*保留*//*
-    bs.readMultiBit(32);
-    bs.readMultiBit(32);
-    bs.readMultiBit(32);
-
-    const uint32_t len = size - 20 - 4 - 8;
-    name = new char[len + 1]();
-
-    bs.getString(name, len);
-
-}
-
-HandlerBox::~HandlerBox() {
-    if (name) {
-        delete[] name;
-        name = nullptr;
-    }
-}*/

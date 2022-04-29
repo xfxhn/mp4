@@ -1,6 +1,7 @@
 #include <cstring>
 #include "audioSampleEntry.h"
 #include "bitStream.h"
+#include "unknownBox.h"
 
 enum List_of_Class_Tags_for_Descriptors {
     Forbidden = 0x00,
@@ -43,10 +44,22 @@ AudioSampleEntry::AudioSampleEntry(BitStream &bs, const char *codingname, uint32
 int AudioSampleEntry::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "esds") == 0) {
-        esdsConfigurationBox esds(bs, boxType, boxSize);
-        boxes.push_back(esds);
+        boxes.push_back(new esdsConfigurationBox(bs, boxType, boxSize));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
     return 0;
+}
+
+std::vector<Box *> AudioSampleEntry::getBoxes() const {
+    return boxes;
+}
+
+AudioSampleEntry::~AudioSampleEntry() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 esdsConfigurationBox::esdsConfigurationBox(BitStream &bs, const char *type, uint32_t size)

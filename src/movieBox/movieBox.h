@@ -41,14 +41,15 @@ public:
 
 class MovieBox : public Box {
 private:
-
-    std::vector<Box> boxes;
-
+    std::vector<Box *> boxes;
 public:
     MovieBox(BitStream &bs, const char *boxtype, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
 
     int parseBox(BitStream &bs, const char *type, uint32_t boxSize);
+
+    ~MovieBox() override;
 };
 
 #endif //MP4_MOVIEBOX_H

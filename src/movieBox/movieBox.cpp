@@ -5,7 +5,7 @@
 #include "userDataBox.h"
 
 MovieBox::MovieBox(BitStream &bs, const char *boxType, uint32_t size)
-        : Box(bs, boxType, size) {
+        : Box(bs, boxType, size, true) {
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -21,17 +21,28 @@ MovieBox::MovieBox(BitStream &bs, const char *boxType, uint32_t size)
 int MovieBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "mvhd") == 0) {
-        boxes.push_back(MovieHeaderBox(bs, "mvhd", boxSize));
+        boxes.push_back(new MovieHeaderBox(bs, "mvhd", boxSize));
     } else if (strcmp(boxType, "iods") == 0) {
-        boxes.push_back(IODS(bs, "iods", boxSize));
+        boxes.push_back(new IODS(bs, "iods", boxSize));
     } else if (strcmp(boxType, "trak") == 0) {
-        boxes.push_back(TrackBox(bs, "trak", boxSize));
+        boxes.push_back(new TrackBox(bs, "trak", boxSize));
     } else if (strcmp(boxType, "udta") == 0) {
-        UserDataBox udta(bs, "udta", boxSize);
-        boxes.push_back(udta);
+        // UserDataBox udta(bs, "udta", boxSize);
+        boxes.push_back(new UserDataBox(bs, "udta", boxSize));
     }
 
     return 0;
+}
+
+std::vector<Box *> MovieBox::getBoxes() const {
+    return boxes;
+}
+
+MovieBox::~MovieBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 MovieHeaderBox::MovieHeaderBox(BitStream &bs, const char *boxtype, uint32_t size)

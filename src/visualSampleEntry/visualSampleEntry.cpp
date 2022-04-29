@@ -1,6 +1,7 @@
 #include <cstring>
 #include "visualSampleEntry.h"
 #include "bitStream.h"
+#include "unknownBox.h"
 
 
 VisualSampleEntry::VisualSampleEntry(BitStream &bs, const char *codingname, uint32_t size)
@@ -68,14 +69,13 @@ VisualSampleEntry::VisualSampleEntry(BitStream &bs, const char *codingname, uint
 int VisualSampleEntry::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "avcC") == 0) {
-        AVCConfigurationBox avcC(bs, boxType, boxSize);
-        boxes.push_back(avcC);
+        boxes.push_back(new AVCConfigurationBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "uuid") == 0) {
-        extendBox uuid(bs, boxType, boxSize);
-        boxes.push_back(uuid);
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "colr") == 0) {
-        ColourInformationBox colr(bs, boxType, boxSize);
-        boxes.push_back(colr);
+        boxes.push_back(new ColourInformationBox(bs, boxType, boxSize));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
     return 0;
 }
@@ -85,6 +85,14 @@ VisualSampleEntry::~VisualSampleEntry() {
         delete[] compressorname;
         compressorname = nullptr;
     }
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
+}
+
+std::vector<Box *> VisualSampleEntry::getBoxes() const {
+    return boxes;
 }
 
 AVCConfigurationBox::AVCConfigurationBox(BitStream &bs, const char *BoxType, uint32_t size)
@@ -187,10 +195,10 @@ AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {
     }
 }
 
-extendBox::extendBox(BitStream &bs, const char *BoxType, uint32_t size)
+/*extendBox::extendBox(BitStream &bs, const char *BoxType, uint32_t size)
         : Box(bs, BoxType, size) {
     uint32_t a = bs.readMultiBit(32);
-}
+}*/
 
 ColourInformationBox::ColourInformationBox(BitStream &bs, const char *BoxType, uint32_t size)
         : Box(bs, BoxType, size) {

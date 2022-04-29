@@ -49,11 +49,15 @@ public:
 /*此box包含所有声明轨道中介质特征信息的对象。(minf)*/
 class MediaInformationBox : public Box {
 public:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 
     MediaInformationBox(BitStream &bs, const char *boxType, uint32_t size, const char *handler_type);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize, const char *handler_type);
+
+    ~MediaInformationBox() override;
 };
 
 #endif //MP4DECODER_MEDIAINFORMATIONBOX_H

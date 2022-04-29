@@ -1,10 +1,11 @@
 #include <cstring>
 #include "dataInformationBox.h"
 #include "bitStream.h"
+#include "unknownBox.h"
 
 
 DataInformationBox::DataInformationBox(BitStream &bs, const char *boxType, uint32_t size)
-        : Box(bs, boxType, size) {
+        : Box(bs, boxType, size, true) {
 
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
@@ -18,13 +19,24 @@ DataInformationBox::DataInformationBox(BitStream &bs, const char *boxType, uint3
 int DataInformationBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "url ") == 0) {
-        boxes.push_back(DataEntryUrlBox(bs, "url ", boxSize));
+        boxes.push_back(new DataEntryUrlBox(bs, "url ", boxSize));
     } else if (strcmp(boxType, "urn ") == 0) {
-        boxes.push_back(DataEntryUrnBox(bs, "urn ", boxSize));
+        boxes.push_back(new DataEntryUrnBox(bs, "urn ", boxSize));
     } else if (strcmp(boxType, "dref") == 0) {
-        boxes.push_back(DataReferenceBox(bs, "dref", boxSize));
+        boxes.push_back(new DataReferenceBox(bs, "dref", boxSize));
     }
     return 0;
+}
+
+std::vector<Box *> DataInformationBox::getBoxes() const {
+    return boxes;
+}
+
+DataInformationBox::~DataInformationBox() {
+    for (std::vector<Box *>::size_type i = 0; i < boxes.size(); ++i) {
+        delete boxes[i];
+        boxes[i] = nullptr;
+    }
 }
 
 DataEntryUrlBox::DataEntryUrlBox(BitStream &bs, const char *boxType, uint32_t size)
@@ -79,11 +91,9 @@ DataEntryUrnBox::~DataEntryUrnBox() {
 }
 
 DataReferenceBox::DataReferenceBox(BitStream &bs, const char *boxType, uint32_t size)
-        : FullBox(bs, boxType, size) {
+        : FullBox(bs, boxType, size, true) {
     entry_count = bs.readMultiBit(32);
-
-    /*type 4 size 4 version 1 flags 3 entry_count 4*/
-    uint32_t offset = 12 + 4;
+    offset += 4;
     while (offset < size) {
         uint32_t boxSize = bs.readMultiBit(32);
         offset += boxSize;
@@ -96,9 +106,15 @@ DataReferenceBox::DataReferenceBox(BitStream &bs, const char *boxType, uint32_t 
 int DataReferenceBox::parseBox(BitStream &bs, const char *boxType, uint32_t boxSize) {
 
     if (strcmp(boxType, "url ") == 0) {
-        boxes.push_back(DataEntryUrlBox(bs, boxType, boxSize));
+        boxes.push_back(new DataEntryUrlBox(bs, boxType, boxSize));
     } else if (strcmp(boxType, "urn ") == 0) {
-        boxes.push_back(DataEntryUrnBox(bs, boxType, boxSize));
+        boxes.push_back(new DataEntryUrnBox(bs, boxType, boxSize));
+    } else {
+        boxes.push_back(new UnknownBox(bs, boxType, boxSize));
     }
     return 0;
+}
+
+std::vector<Box *> DataReferenceBox::getBoxes() const {
+    return boxes;
 }

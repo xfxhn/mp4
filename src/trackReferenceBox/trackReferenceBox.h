@@ -13,9 +13,15 @@ public:
 
 class TrackReferenceBox : public Box {
 public:
+    std::vector<Box *> boxes;
+
     TrackReferenceBox(BitStream &bs, const char *format, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *type, uint32_t boxSize);
+
+    ~TrackReferenceBox() override;
 };
 
 

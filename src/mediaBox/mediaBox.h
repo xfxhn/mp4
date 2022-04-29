@@ -21,36 +21,19 @@ public:
 };
 
 
-/*声明当前track的类型，以及对应的处理器（handler）。*//*
-class HandlerBox : public FullBox {
-public:
-    uint32_t pre_defined;
-    *//* ‘vide’    Video track
-     * ‘soun’   Audio track
-     * ‘hint’   Hint track
-     * ‘meta’   Timed Metadata track
-     * ‘auxv’   Auxiliary Video track
-     * *//*
-    char handler_type[5]{0};
-    char *name;
-public:
-    HandlerBox(BitStream &bs, const char *boxType, uint32_t size);
-
-    ~HandlerBox() override;
-};*/
-
-
 /*mdia 媒体声明容器包含在一个音轨内声明有关媒体数据信息的所有对象。  */
 class MediaBox : public Box {
 private:
-    std::vector<Box> boxes;
-
+    std::vector<Box *> boxes;
     char handler_type[5]{0};
-    char *handler_type1{nullptr};
 public:
     MediaBox(BitStream &bs, const char *boxType, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~MediaBox() override;
 };
 
 #endif //MP4DECODER_MEDIABOX_H

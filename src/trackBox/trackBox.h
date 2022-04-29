@@ -24,11 +24,15 @@ public:
 
 class TrackBox : public Box {
 public:
-    std::vector<Box> boxes;
+    std::vector<Box *> boxes;
 
     TrackBox(BitStream &bs, const char *boxType, uint32_t size);
 
+    std::vector<Box *> getBoxes() const override;
+
     int parseBox(BitStream &bs, const char *boxType, uint32_t boxSize);
+
+    ~TrackBox() override;
 
 };
 
