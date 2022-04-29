@@ -171,6 +171,7 @@ CompactSampleSizeBox::~CompactSampleSizeBox() {
 
 SampleToChunkBox::SampleToChunkBox(BitStream &bs, const char *boxType, uint32_t size)
         : FullBox(bs, boxType, size) {
+    /*几个表项*/
     entry_count = bs.readMultiBit(32);
     /*当前表项中，对应的第一个chunk的序号*/
     first_chunk = new uint32_t[entry_count];
@@ -202,6 +203,7 @@ SampleToChunkBox::~SampleToChunkBox() {
 
 ChunkOffsetBox::ChunkOffsetBox(BitStream &bs, const char *boxType, uint32_t size)
         : FullBox(bs, boxType, size) {
+    /*有多少个chunk*/
     entry_count = bs.readMultiBit(32);
     /*chunk相对于文件的偏移量*/
     /*chunk_offset 指的是在文件本身中的 offset，而不是某个box内部的偏移。*/

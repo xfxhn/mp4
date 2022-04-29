@@ -7,6 +7,8 @@
 #include "fileTypeBox.h"
 #include "movieBox.h"
 #include "mediaDataBox.h"
+#include "handlerBox.h"
+#include "sampleTableBox.h"
 
 // 每次读取的字节数，1024kb
 #define BYTES_READ_PER_TIME 1024 * 1024
@@ -72,6 +74,8 @@ int Decoder::decode() {
 
 //    MovieBox &box = dynamic_cast< MovieBox & >(boxes[1]);
     test(boxes);
+    parseHavc();
+
     return 0;
 }
 
@@ -141,14 +145,40 @@ int Decoder::fillBuffer() {
     return 0;
 }
 
-int Decoder::test(std::vector<Box *> &list) {
-
+int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
     for (std::vector<Box>::size_type i = 0; i < list.size(); ++i) {
-        const char *type = list[i]->type;
+
+        Box *box = list[i];
+        const char *type = box->type;
+
         std::cout << type << std::endl;
-        if (list[i]->containerBoxFlag) {
-            std::vector<Box *> boxList = list[i]->getBoxes();
-            test(boxList);
+
+        if (strcmp(type, "hdlr") == 0) {
+            handler_type = dynamic_cast<HandlerBox *>(box)->handler_type;
+        }
+        if (strcmp(handler_type, "vide") == 0) { //视频track
+            if (strcmp(type, "stsc") == 0) {
+                stsc = dynamic_cast<SampleToChunkBox *>(box);
+
+                int b = 1;
+            }
+
+            if (strcmp(type, "stco") == 0) {
+                stco = dynamic_cast<ChunkOffsetBox *>(box);
+                int b = 1;
+            }
+
+            if (strcmp(type, "stsz") == 0) {
+                stsz = dynamic_cast<SampleSizeBox *>(box);
+                int b = 1;
+            }
+
+        } else if (strcmp(handler_type, "soun") == 0) { //音频track
+
+        }
+        if (box->containerBoxFlag) {
+            std::vector<Box *> boxList = box->getBoxes();
+            test(boxList, handler_type);
 
             /*if (strcmp(type, "moov") == 0) {
                 MovieBox *box = dynamic_cast< MovieBox * >(list[i]);
@@ -165,4 +195,27 @@ Decoder::~Decoder() {
         delete boxes[i];
         boxes[i] = nullptr;
     }
+}
+
+int Decoder::parseHavc() {
+    uint32_t index = 0;
+    const uint32_t chunkSize = stco->entry_count;
+
+    const uint32_t first_chunk = stsc->first_chunk[0];
+
+    for (int i = 0; i < stsc->entry_count; ++i) {
+
+        for (index = 0; index < stsc->first_chunk[i]; ++index) {
+            int a = 1;
+        }
+        index = stsc->first_chunk[i];
+    }
+
+    /*for (uint32_t i = 0; i < chunkSize; ++i) {
+
+    }
+*/
+    int a = 1;
+
+    return 0;
 }

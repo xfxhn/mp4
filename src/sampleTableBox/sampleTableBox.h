@@ -54,7 +54,7 @@ public:
 
 /*两种不同的box类型(stco、co64) 32位或64位偏移量。后者在管理非常大的演示文稿时非常有用。在样本表的任何单个实例中，最多只会出现其中一个变体。*/
 class ChunkOffsetBox : public FullBox {
-private:
+public:
     uint32_t entry_count;
     uint32_t *chunk_offsets{nullptr};
 public:
@@ -77,7 +77,7 @@ public:
 /*stsc*/
 /*sample 以 chunk 为单位分成多个组。chunk的size可以是不同的，chunk里面的sample的size也可以是不同的。*/
 class SampleToChunkBox : public FullBox {
-private:
+public:
     uint32_t entry_count;
     uint32_t *first_chunk;
     uint32_t *samples_per_chunk;

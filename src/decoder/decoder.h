@@ -11,6 +11,12 @@ struct boxInfo;
 
 class BitStream;
 
+class SampleToChunkBox;
+
+class ChunkOffsetBox;
+
+class SampleSizeBox;
+
 class Decoder {
 private:
 
@@ -25,6 +31,11 @@ private:
     /*每次循环需要填充的数目*/
     uint32_t fillByteSize{0};
     bool isEof{true};
+
+
+    SampleToChunkBox *stsc;
+    ChunkOffsetBox *stco;
+    SampleSizeBox *stsz;
 public:
     int init(const char *fileName);
 
@@ -40,7 +51,9 @@ private:
 
     int fillBuffer();
 
-    int test(std::vector<Box *> &list);
+    int test(std::vector<Box *> &list, const char *handler_type = "");
+
+    int parseHavc();
 };
 
 #endif //MP4DECODER_DECODER_H
