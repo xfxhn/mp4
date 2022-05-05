@@ -11,4 +11,6 @@ target_include_directories(decoder
         PRIVATE ${PROJECT_SOURCE_DIR}/src/mediaDataBox
         PRIVATE ${PROJECT_SOURCE_DIR}/src/mediaBox
         PRIVATE ${PROJECT_SOURCE_DIR}/src/sampleTableBox
+        PUBLIC ${PROJECT_SOURCE_DIR}/src/visualSampleEntry
+        PRIVATE ${PROJECT_SOURCE_DIR}/src/xiaofeng
         )

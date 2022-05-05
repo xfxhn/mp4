@@ -3,9 +3,11 @@
 #define MP4DECODER_DECODER_H
 
 #include <fstream>
+
 #include <cstdint>
 #include <vector>
 #include "box.h"
+#include "visualSampleEntry.h"
 
 struct boxInfo;
 
@@ -17,6 +19,10 @@ class ChunkOffsetBox;
 
 class SampleSizeBox;
 
+class MediaDataBox;
+
+class SampleDescriptionBox;
+
 class Decoder {
 private:
 
@@ -25,6 +31,7 @@ private:
 
     uint8_t *buffer{nullptr};
     std::ifstream file;
+    std::ofstream fout;
 
     /*每次循环读取的数目*/
     uint32_t readFileSize{0};
@@ -36,6 +43,8 @@ private:
     SampleToChunkBox *stsc;
     ChunkOffsetBox *stco;
     SampleSizeBox *stsz;
+    MediaDataBox *mdat;
+    SampleDescriptionBox *videStsd;
 public:
     int init(const char *fileName);
 

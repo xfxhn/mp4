@@ -10,6 +10,7 @@
 #include "handlerBox.h"
 #include "sampleTableBox.h"
 
+
 // 每次读取的字节数，1024kb
 #define BYTES_READ_PER_TIME 1024 * 1024
 
@@ -96,15 +97,14 @@ int Decoder::getBoxInfo(boxInfo &info, BitStream &bs) {
         info.size = size;
         info.type = "moov";
 
-//        MovieBox moov(bs, "moov", size);
         boxes.push_back(new MovieBox(bs, "moov", size));
 
     } else if (strcmp(type, "mdat") == 0) {
         info.size = size;
         info.type = "mdat";
 
-//        MediaDataBox mdat(bs, "mdat", size);
-        boxes.push_back(new MediaDataBox(bs, "mdat", size));
+        mdat = new MediaDataBox(bs, "mdat", size);
+        boxes.push_back(mdat);
     }
 
     return 0;
@@ -173,19 +173,50 @@ int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
                 int b = 1;
             }
 
+            if (strcmp(type, "stsd") == 0) {
+                videStsd = dynamic_cast<SampleDescriptionBox *>(box);
+            }
+
         } else if (strcmp(handler_type, "soun") == 0) { //音频track
 
         }
         if (box->containerBoxFlag) {
             std::vector<Box *> boxList = box->getBoxes();
             test(boxList, handler_type);
-
-            /*if (strcmp(type, "moov") == 0) {
-                MovieBox *box = dynamic_cast< MovieBox * >(list[i]);
-                test(box->boxes);
-            }*/
         }
     }
+
+    return 0;
+}
+
+int Decoder::parseHavc() {
+    uint32_t chunkIndex = 0;
+    uint32_t sampleIndex = 0;
+    for (int i = 0; i < stsc->entry_count; ++i) {
+        uint32_t currVal = stsc->first_chunk[i];
+        uint32_t nextVal = stsc->first_chunk[i + 1];
+        if (i + 1 == stsc->entry_count) {
+            nextVal = stsc->first_chunk[i] + 1;
+        }
+        for (uint32_t j = currVal; j < nextVal; ++j) {
+            std::cout << stsc->samples_per_chunk[i] << std::endl;
+
+            /*每个chunk对应的sps pps等一些解码信息*/
+            /*VisualSampleEntry *vide = dynamic_cast<VisualSampleEntry *>(videStsd->getBoxes()[stsc->sample_description_index[i]]);
+            videStsd->getBoxes()[stsc->sample_description_index[i]];*/
+
+            stco->chunk_offsets[chunkIndex] - stco->chunk_offsets[0];
+            for (uint32_t k = 0; k < stsc->samples_per_chunk[i]; ++k) {
+
+                ++sampleIndex;
+            }
+            ++chunkIndex;
+        }
+    }
+
+    std::cout << chunkIndex << std::endl;
+    std::cout << sampleIndex << std::endl;
+    int a = 1;
 
     return 0;
 }
@@ -195,27 +226,4 @@ Decoder::~Decoder() {
         delete boxes[i];
         boxes[i] = nullptr;
     }
-}
-
-int Decoder::parseHavc() {
-    uint32_t index = 0;
-    const uint32_t chunkSize = stco->entry_count;
-
-    const uint32_t first_chunk = stsc->first_chunk[0];
-
-    for (int i = 0; i < stsc->entry_count; ++i) {
-
-        for (index = 0; index < stsc->first_chunk[i]; ++index) {
-            int a = 1;
-        }
-        index = stsc->first_chunk[i];
-    }
-
-    /*for (uint32_t i = 0; i < chunkSize; ++i) {
-
-    }
-*/
-    int a = 1;
-
-    return 0;
 }

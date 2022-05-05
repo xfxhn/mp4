@@ -75,7 +75,7 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
 
         /*每组chunk里的sample对应的解码信息，
          * 比如说有两组sps和pps，这个chunk里的sample用第一个sps，pps，那个chunk里的sample用第二个sps，pps*/
-        for (i = 1; i <= entry_count; ++i) {
+        for (i = 0; i < entry_count; ++i) {
             if (strcmp(handler_type, "soun") == 0) {// for audio tracks
                 boxes.push_back(new AudioSampleEntry(bs, boxTypeName, boxSize));
             } else if (strcmp(handler_type, "vide") == 0) {// for video tracks
@@ -88,7 +88,6 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
                 boxes.push_back(new UnknownBox(bs, boxTypeName, boxSize));
             }
         }
-        // parseBox(bs, boxTypeName, boxSize);
     }
 
 
@@ -180,9 +179,9 @@ SampleToChunkBox::SampleToChunkBox(BitStream &bs, const char *boxType, uint32_t 
     /*指向SampleDescriptionBox里的解码信息的index*/
     sample_description_index = new uint32_t[entry_count];
     for (int i = 0; i < entry_count; ++i) {
-        first_chunk[i] = bs.readMultiBit(32);
+        first_chunk[i] = bs.readMultiBit(32) - 1;
         samples_per_chunk[i] = bs.readMultiBit(32);
-        sample_description_index[i] = bs.readMultiBit(32);
+        sample_description_index[i] = bs.readMultiBit(32) - 1;
     }
 }
 

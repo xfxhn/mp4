@@ -7,13 +7,6 @@
 #include "sampleEntry.h"
 
 
-/*class SampleEntry1 : public Box {
-private:
-    uint16_t data_reference_index;
-public:
-    SampleEntry1(BitStream &bs, const char *format, uint32_t size);
-};*/
-
 /*颜色信息框*/
 class ColourInformationBox : public Box {
 private:

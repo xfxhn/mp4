@@ -133,15 +133,13 @@ public:
 
 
 int main() {
-    /*B b;
-    A &s = b;
-    std::vector<A> arr;
-
-    arr.push_back(b);
-
-    B &c = static_cast<B &>(arr[0]);
-    int sss = c.b;*/
-
+    uint8_t startCode[5] = {0, 0, 0, 1, 254};
+    std::ofstream fout;
+    fout.open("output/aaa.h264", std::ios::binary | std::ios::out | std::ios::trunc);
+    if (fout.is_open()) {
+        fout.write(reinterpret_cast<const char *>(startCode), 5);
+    }
+    fout.close();
     Decoder decode;
     decode.init("resouce/movie.mp4");
     return 0;

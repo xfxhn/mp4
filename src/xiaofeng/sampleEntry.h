@@ -1,6 +1,6 @@
 
-#ifndef MP4DECODER_XIAOFENG_H
-#define MP4DECODER_XIAOFENG_H
+#ifndef MP4_XIAOFENG_H
+#define MP4_XIAOFENG_H
 
 #include "box.h"
 
