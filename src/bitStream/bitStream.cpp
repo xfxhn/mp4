@@ -56,5 +56,12 @@ int BitStream::getString(char str[], uint32_t n) {
     return 0;
 }
 
+int BitStream::setBytePtr(uint32_t n) {
+    currentPtr += n;
+    position += n;
+    bitsLeft = 8;
+    return 0;
+}
+
 
 

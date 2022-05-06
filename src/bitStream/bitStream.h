@@ -35,6 +35,9 @@ public:
 
     //获取n个bit
     uint32_t getMultiBit(uint32_t n);
+
+
+    int setBytePtr(uint32_t n);
 };
 
 #endif //AACDECODER_BITSTREAM_H

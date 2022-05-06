@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <cstring>
+#include <iomanip>
 #include "decoder.h"
 #include "bitStream.h"
 #include "fileTypeBox.h"
@@ -31,16 +32,17 @@ int Decoder::init(const char *fileName) {
         return -1;
     }
 
-    /*file.seekg(8900, std::ios::beg);
+    /*file.seekg(0, std::ios::end);
+    fileSize = file.tellg();
+    file.seekg(0, std::ios::beg);
+    uint32_t offset = 0;
 
-    uint8_t *aaa = new uint8_t[10000]();
+    while (offset < fileSize) {
 
-    file.read(reinterpret_cast<char *>(aaa), 10000);
-    BitStream bs(aaa, 10000);
+        file.read(reinterpret_cast<char *>(buffer), 4);
+    }*/
 
-    uint32_t naluLength = bs.readMultiBit(32);
-    int www = 1;
-    return 1;*/
+
     buffer = new uint8_t[BYTES_READ_PER_TIME]();
 
     file.read(reinterpret_cast<char *>(buffer), BYTES_READ_PER_TIME);
@@ -51,6 +53,8 @@ int Decoder::init(const char *fileName) {
 }
 
 int Decoder::decode() {
+
+//    uint32_t offset = 0;
 
 
     while (true) {
@@ -145,12 +149,12 @@ int Decoder::fillBuffer() {
     return 0;
 }
 
-int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
+int Decoder::test(const std::vector<Box *> &list, const char *handler_type, int spacing) {
     for (std::vector<Box>::size_type i = 0; i < list.size(); ++i) {
 
         Box *box = list[i];
         const char *type = box->type;
-
+        std::cout.width(spacing);
         std::cout << type << std::endl;
 
         if (strcmp(type, "hdlr") == 0) {
@@ -159,18 +163,14 @@ int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
         if (strcmp(handler_type, "vide") == 0) { //视频track
             if (strcmp(type, "stsc") == 0) {
                 stsc = dynamic_cast<SampleToChunkBox *>(box);
-
-                int b = 1;
             }
 
             if (strcmp(type, "stco") == 0) {
                 stco = dynamic_cast<ChunkOffsetBox *>(box);
-                int b = 1;
             }
 
             if (strcmp(type, "stsz") == 0) {
                 stsz = dynamic_cast<SampleSizeBox *>(box);
-                int b = 1;
             }
 
             if (strcmp(type, "stsd") == 0) {
@@ -182,7 +182,7 @@ int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
         }
         if (box->containerBoxFlag) {
             std::vector<Box *> boxList = box->getBoxes();
-            test(boxList, handler_type);
+            test(boxList, handler_type, spacing + 4);
         }
     }
 
@@ -190,6 +190,13 @@ int Decoder::test(std::vector<Box *> &list, const char *handler_type) {
 }
 
 int Decoder::parseHavc() {
+    uint8_t startCode[4] = {0, 0, 0, 1};
+    std::ofstream fout("output/test.h264", std::ios::binary | std::ios::out | std::ios::trunc);
+    if (!fout.is_open()) {
+        std::cout << "打开文件失败" << std::endl;
+        /*fout.write(reinterpret_cast<const char *>(startCode), 5);*/
+    }
+
     uint32_t chunkIndex = 0;
     uint32_t sampleIndex = 0;
     for (int i = 0; i < stsc->entry_count; ++i) {
@@ -202,18 +209,51 @@ int Decoder::parseHavc() {
             std::cout << stsc->samples_per_chunk[i] << std::endl;
 
             /*每个chunk对应的sps pps等一些解码信息*/
-            /*VisualSampleEntry *vide = dynamic_cast<VisualSampleEntry *>(videStsd->getBoxes()[stsc->sample_description_index[i]]);
-            videStsd->getBoxes()[stsc->sample_description_index[i]];*/
+            VisualSampleEntry *vide = dynamic_cast<VisualSampleEntry *>(videStsd->getBoxes()[stsc->sample_description_index[i]]);
+            std::vector<Box *> boxList = vide->getBoxes();
 
-            stco->chunk_offsets[chunkIndex] - stco->chunk_offsets[0];
+            AVCConfigurationBox *avcC = nullptr;
+            for (int l = 0; l < boxList.size(); ++l) {
+                if (strcmp(boxList[l]->type, "avcC") == 0) {
+                    avcC = dynamic_cast<AVCConfigurationBox *>(boxList[l]);
+                }
+            }
+
+            /*sps*/
+            fout.write(reinterpret_cast<const char *>(startCode), 4);
+            fout.write(reinterpret_cast<const char *>(avcC->AVCConfig.sequenceParameterSetNALUnit[0]),
+                       avcC->AVCConfig.sequenceParameterSetLength[0]);
+            /*pps*/
+            fout.write(reinterpret_cast<const char *>(startCode), 4);
+            fout.write(reinterpret_cast<const char *>(avcC->AVCConfig.pictureParameterSetNALUnit[0]),
+                       avcC->AVCConfig.pictureParameterSetLength[0]);
+
+            uint32_t chunkOffset = stco->chunk_offsets[chunkIndex] - stco->chunk_offsets[0];
             for (uint32_t k = 0; k < stsc->samples_per_chunk[i]; ++k) {
 
+                uint32_t sampleSize = stsz->entry_size_list[sampleIndex];
+
+                BitStream bs(mdat->data + chunkOffset, sampleSize);
+                uint32_t offset = 0;
+                while (offset < sampleSize) {
+                    uint32_t naluSize = bs.readMultiBit(32);
+                    offset += 4;
+                    offset += naluSize;
+                    fout.write(reinterpret_cast<const char *>(startCode), 4);
+                    fout.write(reinterpret_cast<const char *>(bs.currentPtr), naluSize);
+                    bs.setBytePtr(naluSize);
+                }
+                fout.close();
+                /*fout.write(reinterpret_cast<const char *>(startCode), 4);
+
+                fout.write(reinterpret_cast<const char *>(mdat->data), sampleSize);
+                fout.close();*/
                 ++sampleIndex;
             }
             ++chunkIndex;
         }
     }
-
+    fout.close();
     std::cout << chunkIndex << std::endl;
     std::cout << sampleIndex << std::endl;
     int a = 1;

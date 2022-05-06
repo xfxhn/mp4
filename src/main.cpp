@@ -133,13 +133,13 @@ public:
 
 
 int main() {
-    uint8_t startCode[5] = {0, 0, 0, 1, 254};
+    /*uint8_t startCode[4] = {0, 0, 0, 1};
     std::ofstream fout;
-    fout.open("output/aaa.h264", std::ios::binary | std::ios::out | std::ios::trunc);
+    fout.open("output/aaa.h264", std::ios::binary | std::ios::out);
     if (fout.is_open()) {
-        fout.write(reinterpret_cast<const char *>(startCode), 5);
+        fout.write(reinterpret_cast<const char *>(startCode), 4);
     }
-    fout.close();
+    fout.close();*/
     Decoder decode;
     decode.init("resouce/movie.mp4");
     return 0;

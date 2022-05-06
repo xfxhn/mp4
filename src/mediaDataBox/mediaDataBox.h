@@ -4,7 +4,7 @@
 #include "box.h"
 
 class MediaDataBox : public Box {
-private:
+public:
     uint8_t *data{nullptr};
 public:
     MediaDataBox(BitStream &bs, const char *boxType, uint32_t size);

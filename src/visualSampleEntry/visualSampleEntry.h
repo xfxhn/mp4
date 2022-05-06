@@ -30,7 +30,7 @@ public:
 
 
 class AVCDecoderConfigurationRecord {
-private:
+public:
 
     uint8_t configurationVersion;
     uint8_t AVCProfileIndication;
@@ -67,6 +67,7 @@ public:
 
 /* AVCConfig*/
 class AVCConfigurationBox : public Box {
+public:
     AVCDecoderConfigurationRecord AVCConfig;
 public:
     AVCConfigurationBox(BitStream &bs, const char *BoxType, uint32_t size);

@@ -28,10 +28,10 @@ private:
 
     std::vector<Box *> boxes;
 
-
+    uint64_t fileSize{0};
     uint8_t *buffer{nullptr};
     std::ifstream file;
-    std::ofstream fout;
+
 
     /*每次循环读取的数目*/
     uint32_t readFileSize{0};
@@ -60,7 +60,7 @@ private:
 
     int fillBuffer();
 
-    int test(std::vector<Box *> &list, const char *handler_type = "");
+    int test(const std::vector<Box *> &list, const char *handler_type = "", int spacing = 4);
 
     int parseHavc();
 };
