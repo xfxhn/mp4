@@ -73,6 +73,7 @@ SampleDescriptionBox::SampleDescriptionBox(BitStream &bs, const char *boxType, u
         char boxTypeName[5] = {0};
         bs.getString(boxTypeName, 4);
 
+        /*因为一段视频可以有多个sps和pps*/
         /*每组chunk里的sample对应的解码信息，
          * 比如说有两组sps和pps，这个chunk里的sample用第一个sps，pps，那个chunk里的sample用第二个sps，pps*/
         for (i = 0; i < entry_count; ++i) {

@@ -216,6 +216,7 @@ int Decoder::parseHavc() {
             for (int l = 0; l < boxList.size(); ++l) {
                 if (strcmp(boxList[l]->type, "avcC") == 0) {
                     avcC = dynamic_cast<AVCConfigurationBox *>(boxList[l]);
+                    break;
                 }
             }
 

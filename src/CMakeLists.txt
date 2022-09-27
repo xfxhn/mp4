@@ -26,6 +26,7 @@ add_subdirectory(unknownBox)
 target_include_directories(MP4Decoder
         PRIVATE ${PROJECT_SOURCE_DIR}/src/decoder
         )
+
 target_link_libraries(MP4Decoder
         PRIVATE sampleEntry decoder bitStream box fileTypeBox movieBox trackBox mediaBox
         mediaInformationBox dataInformationBox sampleTableBox visualSampleEntry trackReferenceBox audioSampleEntry

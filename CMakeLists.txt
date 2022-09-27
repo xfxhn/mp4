@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(MP4 LANGUAGES CXX C)
+
+option(USE_MYMATH "Use provided math implementation" ON)
 #cpp11标准
 set(CMAKE_CXX_STANDARD 11)
 #关闭编译器扩展
